@@ -1,0 +1,16 @@
+# 构建产物
+.build/
+build/
+*.o
+
+# 系统文件
+.DS_Store
+
+# Xcode/编辑器
+xcuserdata/
+*.xcworkspace
+.idea/
+.vscode/
+
+# ZCode 工具会话文件
+.zcode/
