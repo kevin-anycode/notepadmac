@@ -8,6 +8,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var pendingOpenURLs: [URL] = []
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        // 演示截图模式:NOTEPADMAC_DEMO_ROOT(隔离数据目录) + NOTEPADMAC_DEMO_SCREENSHOT(输出目录)
+        let env = ProcessInfo.processInfo.environment
+        FileHandle.standardError.write("didFinishLaunching, demo dir=\(env["NOTEPADMAC_DEMO_SCREENSHOT"] ?? "nil")\n".data(using: .utf8)!)
+        if let shotDir = env["NOTEPADMAC_DEMO_SCREENSHOT"], env["NOTEPADMAC_DEMO_ROOT"] != nil {
+            runDemoScreenshotMode(outputDir: shotDir)
+            exit(0)
+        }
+
         Preferences.ensureDirectories()
 
         let controller = MainWindowController()
@@ -24,6 +32,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             controller.openFiles(urls: pendingOpenURLs)
             pendingOpenURLs = []
         }
+    }
+
+    /// 生成 README 产品截图(两张:随笔 + Markdown 高亮 / 代码高亮),离屏渲染无需权限
+    private func runDemoScreenshotMode(outputDir: String) {
+        let fm = FileManager.default
+        try? fm.createDirectory(atPath: outputDir, withIntermediateDirectories: true)
+        NSApp.appearance = NSAppearance(named: .aqua) // README 使用浅色主题
+
+        let controller = MainWindowController()
+        controller.setupDemoContent()
+        controller.showWindow(nil)
+        controller.window?.makeKeyAndOrderFront(nil)
+
+        let okMain = controller.renderDemoShot(to: outputDir + "/screenshot-main.png")
+        controller.closeFindBar()
+        controller.demoSelectTab(at: 1)
+        let okCode = controller.renderDemoShot(to: outputDir + "/screenshot-code.png")
+        FileHandle.standardError.write("main: \(okMain), code: \(okCode)\n".data(using: .utf8)!)
+        exit(0)
     }
 
     // MARK: Finder「打开方式」/ 双击文件 / 拖到 Dock 图标

@@ -65,7 +65,11 @@ enum Preferences {
     // MARK: 数据目录
 
     /// ~/Library/Application Support/NotepadMac
+    /// 演示截图模式(NOTEPADMAC_DEMO_ROOT 存在时)重定向到临时目录,不触碰真实数据
     static var appSupportDir: URL {
+        if let demoRoot = ProcessInfo.processInfo.environment["NOTEPADMAC_DEMO_ROOT"] {
+            return URL(fileURLWithPath: demoRoot, isDirectory: true)
+        }
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         return base.appendingPathComponent("NotepadMac", isDirectory: true)
     }

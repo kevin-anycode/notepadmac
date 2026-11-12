@@ -1463,6 +1463,192 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
         }
     }
 
+    // MARK: - 演示截图模式(README 产品截图;由环境变量触发,正常运行不会进入)
+
+    /// 构建展示性场景:多标签 + 语法高亮 + 查找条 + 状态栏脏标记
+    func setupDemoContent() {
+        window?.setFrame(NSRect(x: 0, y: 0, width: 1280, height: 800), display: true)
+        tabs.removeAll()
+        historyStore.clear()
+
+        let markdownTab = EditorTab.newDraft(name: "随笔·项目想法.md", language: .markdown)
+        markdownTab.content = """
+        # NotepadMac 项目随笔
+
+        **11月12日** 定下了这个编辑器的三条底线:
+
+        - 打开就写,永不丢失 —— 自动备份 + 会话恢复
+        - 关键动作有确认 —— 关闭与退出都有保存提示
+        - 历史可回溯 —— 误关的草稿一定能找回(上限 50 条)
+
+        ## 明天要做
+        1. 用真实样本再跑一遍 GB18030 检测
+        2. 验证 1MB 大文件的滚动流畅度
+
+        > 随手记,随手得。
+        """
+
+        let swiftTab = EditorTab.newDraft(name: "AutoSaveController.swift", language: .swift)
+        swiftTab.content = """
+        import Foundation
+
+        /// 自动保存调度:去抖落盘 + 周期兜底
+        final class AutoSaveController {
+
+            static let debounceInterval: TimeInterval = 0.8
+            static let sweepInterval: TimeInterval = 5.0
+
+            var onFlushNeeded: (() -> Void)?
+            private var sweepTimer: Timer?
+
+            func start() {
+                let timer = Timer(timeInterval: Self.sweepInterval, repeats: true) { [weak self] _ in
+                    self?.onFlushNeeded?()
+                }
+                RunLoop.main.add(timer, forMode: .common)
+                sweepTimer = timer
+            }
+        }
+        """
+
+        let jsonTab = EditorTab.newDraft(name: "settings.json", language: .json)
+        jsonTab.content = """
+        {
+          "editor": {
+            "font": "Menlo",
+            "fontSize": 13,
+            "wrap": true,
+            "lineNumbers": true
+          },
+          "autosave": { "debounceMs": 800, "sweepSec": 5 },
+          "history": { "maxEntries": 50, "defaultVisible": 10 }
+        }
+        """
+
+        let noteTab = EditorTab.newDraft(name: "会议记录.txt", language: .plain)
+        noteTab.content = """
+        项目周会(11月12日)
+
+        1. NotepadMac 打字延迟优化完成
+        2. 历史文档功能上线,默认展示 10 条
+        3. 下周:公证打包,发布 dmg
+        """
+
+        for tab in [markdownTab, swiftTab, jsonTab, noteTab] {
+            tabs.append(tab)
+            tab.textView.delegate = self
+        }
+        activeIndex = 0
+        attachActiveTabView()
+        for tab in tabs where tab.needsFullHighlight {
+            applyHighlight(tab)
+        }
+        refreshAllUI()
+
+        // 打开查找条并高亮命中,展示查找功能
+        findBar.show(replaceMode: false)
+        findHeightConstraint.constant = FindBarView.height
+        findBar.setQuery("保存")
+        updateFindMatches()
+        window?.contentView?.layoutSubtreeIfNeeded()
+    }
+
+    /// 切换到指定标签并离屏渲染窗口为 PNG。
+    /// 注意:NSScrollView 的行号标尺不走离屏 draw 递归,需在 rep 上下文中手动补画。
+    @discardableResult
+    func renderDemoShot(to path: String) -> Bool {
+        guard let content = window?.contentView, let tab = activeTab else { return false }
+        content.layoutSubtreeIfNeeded()
+        tab.textView.layoutManager?.ensureLayout(for: tab.textView.textContainer ?? NSTextContainer())
+        tab.ruler.needsDisplay = true
+        content.layoutSubtreeIfNeeded()
+
+        let bounds = content.bounds
+        guard let rep = content.bitmapImageRepForCachingDisplay(in: bounds) else { return false }
+        content.cacheDisplay(in: bounds, to: rep)
+
+        // 手动补画行号:离屏渲染不走 NSScrollView 的标尺绘制管线。
+        // rep 位图上下文为 y-up(已实验标定)。
+        // 注意:wrap 模式下 container.size.height 是无穷大,不能用容器高度做基准,
+        // 改用"第一行 maxY"锚定,其余行相对它偏移。
+        if let ruler = tab.scrollView.verticalRulerView,
+           let lm = tab.textView.layoutManager,
+           let container = tab.textView.textContainer {
+            NSGraphicsContext.saveGraphicsState()
+            let context = NSGraphicsContext(bitmapImageRep: rep)
+            NSGraphicsContext.current = context
+
+            let tvFrame = tab.textView.convert(tab.textView.bounds, to: content) // y-up
+            let numberRightX: CGFloat = 40           // 行号右对齐位置(标尺区 0..46,避开正文)
+            let tvTopVisual = bounds.height - tvFrame.maxY
+            let insetH = tab.textView.textContainerInset.height
+            let docTopVisual = tvTopVisual + insetH                    // 第一行文字顶部视觉 y
+
+            let index = { tab.rebuildIndexIfNeeded(); return tab.lineIndex }()
+            let glyphRange = lm.glyphRange(for: container)
+            let caretLine = index.lineNumber(at: tab.textView.selectedRange().location)
+            let regularFont = NSFont.monospacedDigitSystemFont(ofSize: 11, weight: .regular)
+
+            // 第一遍:收集(逻辑行, 片段 minY = 行顶距容器顶的视觉距离)
+            // TextKit 布局的 fragRect.minY 就是视觉方向(从容器顶部向下增长)
+            var fragments: [(line: Int, minY: CGFloat)] = []
+            lm.enumerateLineFragments(forGlyphRange: glyphRange) { fragRect, _, _, fragGlyphs, _ in
+                let charRange = lm.characterRange(forGlyphRange: fragGlyphs, actualGlyphRange: nil)
+                let line = index.lineNumber(at: charRange.location)
+                FileHandle.standardError.write("frag line=\(line) minY=\(fragRect.minY) maxY=\(fragRect.maxY) h=\(fragRect.height)\n".data(using: .utf8)!)
+                fragments.append((line, fragRect.minY))
+            }
+            guard !fragments.isEmpty else {
+                NSGraphicsContext.restoreGraphicsState()
+                return false
+            }
+            var lastLine = -1
+            for frag in fragments {
+                guard frag.line != lastLine else { continue }
+                lastLine = frag.line
+
+                let visualY = docTopVisual + frag.minY                 // 行顶视觉 y(距窗口顶)
+                let numberString = String(frag.line) as NSString
+                let attrs: [NSAttributedString.Key: Any] = [
+                    .font: frag.line == caretLine
+                        ? NSFont.monospacedDigitSystemFont(ofSize: 11, weight: .semibold)
+                        : regularFont,
+                    .foregroundColor: frag.line == caretLine
+                        ? NSColor.controlAccentColor
+                        : NSColor.tertiaryLabelColor,
+                ]
+                let size = numberString.size(withAttributes: attrs)
+                numberString.draw(
+                    at: NSPoint(x: numberRightX - size.width,
+                                y: bounds.height - visualY - size.height),
+                    withAttributes: attrs)
+            }
+            NSGraphicsContext.restoreGraphicsState()
+
+            // 恢复标尺配置(下次真实显示时按用户偏好)
+            tab.scrollView.rulersVisible = Preferences.lineNumbersEnabled
+            tab.scrollView.hasVerticalRuler = Preferences.lineNumbersEnabled
+        }
+
+        guard let png = rep.representation(using: .png, properties: [:]) else { return false }
+        do {
+            try png.write(to: URL(fileURLWithPath: path))
+            return true
+        } catch {
+            return false
+        }
+    }
+
+    /// 切换激活标签(截图第二张用)
+    func demoSelectTab(at index: Int) {
+        activeIndex = index
+        attachActiveTabView()
+        if let tab = activeTab, tab.needsFullHighlight {
+            applyHighlight(tab)
+        }
+        refreshAllUI()
+    }
+
     // MARK: - 通用弹窗
 
     func showAlert(_ title: String, _ message: String) {
