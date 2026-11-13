@@ -1402,11 +1402,19 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
     // MARK: - 帮助
 
     @objc func showAbout() {
+        let credits = NSMutableAttributedString(string:
+            "macOS 原生文本编辑器\n对标 Notepad++ 的平替之作\n\n自动保存 · 会话恢复 · 多标签 · 语法高亮\n\n")
+        credits.append(NSAttributedString(
+            string: "开发者:L.K\nQQ:394808300",
+            attributes: [
+                .font: NSFont.systemFont(ofSize: 11),
+                .foregroundColor: NSColor.secondaryLabelColor,
+            ]))
         NSApp.orderFrontStandardAboutPanel(options: [
             .applicationName: "NotepadMac",
             .applicationVersion: "1.0",
             NSApplication.AboutPanelOptionKey.version: "1.0",
-            .credits: NSAttributedString(string: "macOS 原生文本编辑器\n对标 Notepad++ 的平替之作\n\n自动保存 · 会话恢复 · 多标签 · 语法高亮"),
+            .credits: credits,
         ])
     }
 
