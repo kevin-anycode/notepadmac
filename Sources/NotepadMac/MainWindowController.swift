@@ -829,10 +829,12 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
         let text = tab.textView.string
         storage.beginEditing()
         let full = NSRange(location: 0, length: storage.length)
-        storage.removeAttribute(.foregroundColor, range: full)
         storage.removeAttribute(.obliqueness, range: full)
         let baseFont = Preferences.editorFont
         storage.addAttribute(.font, value: baseFont, range: full)
+        // 基础前景色必须显式补上:属性字符串缺失 .foregroundColor 时按黑色渲染,
+        // 不回退到 textView.textColor —— 深色模式下会变成"黑字黑底"
+        storage.addAttribute(.foregroundColor, value: NSColor.labelColor, range: full)
 
         if tab.language != .plain,
            (text as NSString).length <= SyntaxHighlighter.highlightSizeLimit {

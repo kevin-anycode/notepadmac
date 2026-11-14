@@ -38,12 +38,27 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func runDemoScreenshotMode(outputDir: String) {
         let fm = FileManager.default
         try? fm.createDirectory(atPath: outputDir, withIntermediateDirectories: true)
-        NSApp.appearance = NSAppearance(named: .aqua) // README 使用浅色主题
+        // 外观:NOTEPADMAC_DEMO_APPEARANCE=dark 渲染深色主题(验证深色模式用),默认浅色
+        let demoEnv = ProcessInfo.processInfo.environment
+        if demoEnv["NOTEPADMAC_DEMO_APPEARANCE"] == "dark" {
+            NSApp.appearance = NSAppearance(named: .darkAqua)
+        } else {
+            NSApp.appearance = NSAppearance(named: .aqua) // README 使用浅色主题
+        }
 
         let controller = MainWindowController()
         controller.setupDemoContent()
         controller.showWindow(nil)
         controller.window?.makeKeyAndOrderFront(nil)
+
+        // NOTEPADMAC_DEMO_TAB=N + NOTEPADMAC_DEMO_OUT=path:只截指定标签(深色验证用)
+        if let tabIndex = demoEnv["NOTEPADMAC_DEMO_TAB"].flatMap(Int.init),
+           let customOut = demoEnv["NOTEPADMAC_DEMO_OUT"] {
+            controller.demoSelectTab(at: tabIndex)
+            let ok = controller.renderDemoShot(to: customOut)
+            FileHandle.standardError.write("tab\(tabIndex): \(ok)\n".data(using: .utf8)!)
+            exit(0)
+        }
 
         let okMain = controller.renderDemoShot(to: outputDir + "/screenshot-main.png")
         controller.closeFindBar()
