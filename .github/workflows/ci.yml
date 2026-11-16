@@ -1,0 +1,21 @@
+name: CI
+
+# 任何指向 master 的 PR 自动跑测试;master/dev 有推送时也验证
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master, dev]
+
+jobs:
+  test:
+    name: 构建 + 单元测试
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 编译 (Release)
+        run: swift build -c release
+
+      - name: 运行单元测试
+        run: bash Scripts/run_tests.sh
