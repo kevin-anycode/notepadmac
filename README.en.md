@@ -172,4 +172,4 @@ TestsStandalone/main.swift     # 147 unit assertions
 
 ## Support
 
-If NotepadMac helps you, please give it a **Star ⭐** — bug reports and feature requests are welcome at [Issues](https://gitee.com/kevin-anycode/notepadmac/issues), PRs are welcome too.
+If NotepadMac helps you, please give it a **Star ⭐** — bug reports and feature requests are welcome at [Issues](../../issues), PRs are welcome too.

@@ -172,4 +172,4 @@ TestsStandalone/main.swift     # 147 项单元断言
 
 ## 支持与反馈
 
-如果 NotepadMac 对你有帮助,欢迎点个 **Star ⭐** 支持一下!使用问题或功能建议欢迎提 [Issue](https://gitee.com/kevin-anycode/notepadmac/issues),也欢迎 PR。
+如果 NotepadMac 对你有帮助,欢迎点个 **Star ⭐** 支持一下!使用问题或功能建议欢迎提 [Issue](../../issues) 反馈,也欢迎 PR。
