@@ -211,6 +211,15 @@ final class FindBarView: NSView {
     func setQuery(_ text: String) {
         queryField.stringValue = text
     }
+
+    func setReplacement(_ text: String) {
+        replaceField.stringValue = text
+    }
+
+    /// 截图演示用:程序化切换正则开关
+    func setRegexEnabled(_ on: Bool) {
+        regexButton.state = on ? .on : .off
+    }
 }
 
 extension FindBarView: NSTextFieldDelegate {

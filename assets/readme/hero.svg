@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="heroTitle heroDesc">
+  <title id="heroTitle">NotepadMac —— 打开即写,永不丢失的 macOS 原生 Notepad++ 平替</title>
+  <desc id="heroDesc">深紫色背景,左侧为项目名与一句话价值,右侧是一个微型编辑器窗口:标签栏带未保存橙点、Markdown 随笔内容与底部状态栏(行:列、编码、换行符、语言)。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2D2650"/>
+      <stop offset="1" stop-color="#1F1936"/>
+    </linearGradient>
+    <clipPath id="winClip">
+      <rect x="656" y="44" width="488" height="272" rx="14"/>
+    </clipPath>
+  </defs>
+
+  <rect width="1200" height="360" rx="24" fill="url(#bg)"/>
+
+  <g id="intro">
+    <text x="64" y="106" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="20" fill="#A99BD6">macOS 原生 · Swift + AppKit · 零第三方依赖</text>
+    <text x="64" y="186" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Segoe UI', sans-serif" font-size="72" font-weight="700" fill="#F7F5FD">NotepadMac</text>
+    <rect x="500" y="132" width="10" height="56" rx="3" fill="#F7941E"/>
+    <text x="64" y="242" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Segoe UI', sans-serif" font-size="32" font-weight="600" fill="#F1EDFB">打开即写,永不丢失</text>
+    <text x="64" y="280" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Segoe UI', sans-serif" font-size="24" fill="#C9BFEC">Notepad++ 的 macOS 平替</text>
+    <text x="64" y="320" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="18" fill="#9C8FC9">~1MB 安装包 · 147 项测试 · macOS 13+ · v1.0.0</text>
+  </g>
+
+  <g id="editor-window">
+    <rect x="656" y="44" width="488" height="272" rx="14" fill="#FFFFFF"/>
+    <g clip-path="url(#winClip)">
+      <line x1="656" y1="84" x2="1144" y2="84" stroke="#ECE7F6" stroke-width="1"/>
+      <rect x="656" y="288" width="488" height="28" fill="#F2EFF9"/>
+      <line x1="656" y1="288" x2="1144" y2="288" stroke="#E4DEF4" stroke-width="1"/>
+    </g>
+
+    <circle cx="680" cy="64" r="5.5" fill="#FF5F57"/>
+    <circle cx="700" cy="64" r="5.5" fill="#FEBC2E"/>
+    <circle cx="720" cy="64" r="5.5" fill="#28C840"/>
+
+    <g id="tabs" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="15">
+      <circle cx="746" cy="64" r="4" fill="#F08A1D"/>
+      <text x="756" y="69" font-weight="600" fill="#322C46">项目想法.md</text>
+      <rect x="740" y="81" width="116" height="3" rx="1.5" fill="#8F5CF7"/>
+      <circle cx="884" cy="64" r="4" fill="#F08A1D"/>
+      <text x="894" y="69" fill="#6B6488">AutoSav….s…</text>
+      <circle cx="1010" cy="64" r="4" fill="#F08A1D"/>
+      <text x="1020" y="69" fill="#6B6488">会议记录.txt</text>
+    </g>
+
+    <g id="editor-lines" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="14" fill="#BDB5D8" text-anchor="end">
+      <text x="746" y="116">1</text>
+      <text x="746" y="140">2</text>
+      <text x="746" y="164">3</text>
+      <text x="746" y="188">4</text>
+      <text x="746" y="212">5</text>
+      <text x="746" y="236">6</text>
+      <text x="746" y="260">7</text>
+    </g>
+
+    <g id="editor-text" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="16">
+      <text x="758" y="116" fill="#2F6BFF" font-weight="600"># NotepadMac 项目随笔</text>
+      <text x="758" y="164"><tspan fill="#2F6BFF" font-weight="600">11月12日</tspan><tspan fill="#3A3547"> 定下了这个编辑器的三条底线:</tspan></text>
+      <rect x="963" y="199" width="34" height="21" rx="4" fill="#FFE3A0"/>
+      <text x="758" y="212" fill="#3A3547"><tspan>打开即写,永不丢失 —— 自动</tspan><tspan>备份</tspan><tspan> + 会话恢复</tspan></text>
+      <text x="758" y="236" fill="#3A3547">关键动作有确认 —— 关闭与退出都有保存提示</text>
+      <text x="758" y="260" fill="#8A84A0">&gt; 备份做得好,才敢不按 Cmd+S。</text>
+    </g>
+    <rect x="1006" y="246" width="3" height="20" rx="1.5" fill="#F08A1D"/>
+
+    <g id="statusbar" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="16" fill="#6B6488">
+      <text x="676" y="307">行 5, 列 1 · 43 字符</text>
+      <text x="1124" y="307" text-anchor="end">UTF-8 · LF · Markdown</text>
+    </g>
+  </g>
+</svg>

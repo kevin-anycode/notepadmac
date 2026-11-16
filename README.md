@@ -1,18 +1,53 @@
-# NotepadMac
+<p align="center">
+  <img src="assets/readme/hero.svg" width="100%" alt="NotepadMac —— 打开即写,永不丢失的 macOS 原生 Notepad++ 平替;右侧为多标签编辑器窗口,底部状态栏显示行:列、编码、换行符与语言">
+</p>
 
-**macOS 原生文本编辑器 · 对标 Windows Notepad++ 的平替之作**
+**macOS 原生文本编辑器 · 对标 Windows Notepad++ 的平替之作。**
 
 纯 Swift + AppKit 构建,零第三方依赖,无 Electron。核心设计哲学:**打开即写,永不丢失** —— 自动备份 + 会话恢复双保险,关闭应用再打开,一切如初。
 
 ## 界面预览
 
-**随笔模式:Markdown 高亮 + 查找高亮 + 多标签**
+**主窗口**:菜单栏完整收录,Markdown 高亮 + 查找高亮 + 多标签,底部状态栏实时显示 行:列 / 选区 / 编码 / 换行符 / 语言
 
-![随笔模式:Markdown 高亮、查找替换、多标签编辑](docs/screenshots/screenshot-main.png)
+![主窗口:菜单栏、Markdown 高亮、查找替换、多标签编辑](docs/screenshots/screenshot-main.png)
 
-**代码模式:Swift 语法高亮 + 行号**
+**查找/替换**:正则 `\d+` 命中 11 处全部高亮,`$0` 反向引用替换
 
-![代码模式:Swift 语法高亮与行号](docs/screenshots/screenshot-code.png)
+![查找替换:正则全部匹配高亮与反向引用替换](docs/screenshots/screenshot-replace.png)
+
+**编码转换**:UTF-8 / UTF-8 BOM / UTF-16 LE·BE / Latin-1 / GB18030 菜单一键互转,跨平台文本不乱码
+
+![编码菜单:多种编码一键转换](docs/screenshots/screenshot-menu-encoding.png)
+
+**保存确认**:关闭标签 / 退出应用,只要有未保存修改必然弹窗,误关也不丢内容
+
+![保存确认弹窗:保存 / 不保存 / 取消](docs/screenshots/screenshot-confirm.png)
+
+**代码模式**:Swift 语法高亮 + 行号,深浅色跟随系统外观
+
+<table>
+  <tr>
+    <td><img src="docs/screenshots/screenshot-code.png" alt="代码模式:Swift 语法高亮与行号(浅色)" /></td>
+    <td><img src="docs/screenshots/screenshot-dark.png" alt="深色模式:语法高亮跟随系统" /></td>
+  </tr>
+  <tr>
+    <td align="center">浅色 · Swift 语法高亮 + 行号</td>
+    <td align="center">深色 · 跟随系统外观</td>
+  </tr>
+</table>
+
+**状态栏特写**:行:列 · 已选字符数 · 总字符 · 行数 · 编码 · 换行符 · 语言
+
+![状态栏特写:行:列、选区、字符统计、编码、换行符、语言](docs/screenshots/screenshot-statusbar.png)
+
+## 永不丢失,是怎么做到的
+
+<p align="center">
+  <img src="assets/readme/auto-save-flow.svg" width="100%" alt="机制图:打字停顿 0.8 秒去抖快照、每 5 秒周期兜底、切换标签或失焦即时落盘、正常退出全部写盘;崩溃重启后恢复所有标签,未保存的正文一并还原">
+</p>
+
+编辑 0.8 秒后自动写入应用内快照,另有 5 秒周期兜底;切换标签、应用失焦时同步落盘;正常退出前全部写盘并记录会话。崩溃、强退、误关都不丢内容 —— 重启后恢复所有标签,**连未保存的正文也一并回来**。
 
 ## 为什么选它
 
@@ -46,7 +81,29 @@
 - 插入时间戳(Cmd+;)、大小写转换、字体缩放(Cmd +/-/0)、字体面板(Cmd+T)
 - 自动换行开关、窗口置顶、深色模式跟随系统
 
+## 快速开始
+
+无需完整版 Xcode,装好 Command Line Tools 即可(`xcode-select --install`):
+
+```bash
+cd notepadmac
+bash build.sh               # 构建到 build/NotepadMac.app
+open build/NotepadMac.app   # 直接运行
+bash build.sh --install     # 或安装到 /Applications
+```
+
+### 运行单元测试
+
+本环境无 XCTest(仅随完整 Xcode 分发),采用独立测试运行器:
+
+```bash
+bash Scripts/run_tests.sh   # 147 项断言,退出码 0 = 全部通过
+```
+
 ## 快捷键
+
+<details>
+<summary><b>完整快捷键表(点击展开)</b></summary>
 
 | 操作 | 快捷键 |
 |---|---|
@@ -64,24 +121,7 @@
 | 放大 / 缩小 / 实际大小 | Cmd+= / Cmd+- / Cmd+0 |
 | 字体面板 | Cmd+T |
 
-## 构建与安装
-
-无需完整版 Xcode,装好 Command Line Tools 即可(`xcode-select --install`):
-
-```bash
-cd notepadmac
-bash build.sh               # 构建到 build/NotepadMac.app
-open build/NotepadMac.app   # 直接运行
-bash build.sh --install     # 或安装到 /Applications
-```
-
-### 运行单元测试
-
-本环境无 XCTest(仅随完整 Xcode 分发),采用独立测试运行器:
-
-```bash
-bash Scripts/run_tests.sh   # 94 项断言,退出码 0 = 全部通过
-```
+</details>
 
 ## 数据目录
 
@@ -95,6 +135,9 @@ drafts/<UUID>.txt     # 草稿正文 + 命名文件的崩溃恢复快照
 删除该目录即可完全重置应用(帮助菜单里有「打开数据目录」)。
 
 ## 工程结构
+
+<details>
+<summary><b>目录与模块说明(点击展开)</b></summary>
 
 ```
 Package.swift                  # SPM:NotepadCore(纯逻辑库) + NotepadMac(AppKit 应用)
@@ -116,11 +159,17 @@ Sources/NotepadMac/            # AppKit 应用层
   SessionStore.swift           #   session.json + drafts 目录管理
   AutoSaveController.swift     #   去抖 0.8s + 周期 5s 调度
   SyntaxColors.swift / Menus.swift / Preferences.swift / FileDropView.swift
-TestsStandalone/main.swift     # 94 项单元断言
+TestsStandalone/main.swift     # 147 项单元断言
 ```
+
+</details>
 
 ## 已知边界(v2 候选)
 
 - 标签数量极多时标签栏等宽挤压(无横向滚动)
 - 大文件(>1MB)自动关闭语法高亮以保证流畅
 - 无列编辑、书签、宏、插件系统(Notepad++ 高级特性)
+
+## 支持与反馈
+
+如果 NotepadMac 对你有帮助,欢迎点个 **Star ⭐** 支持一下!使用问题或功能建议欢迎提 [Issue](https://gitee.com/kevin-anycode/notepadmac/issues),也欢迎 PR。

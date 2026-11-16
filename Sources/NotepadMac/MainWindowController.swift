@@ -1476,10 +1476,12 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
     // MARK: - 演示截图模式(README 产品截图;由环境变量触发,正常运行不会进入)
 
     /// 构建展示性场景:多标签 + 语法高亮 + 查找条 + 状态栏脏标记
-    func setupDemoContent() {
+    func setupDemoContent(preserveHistory: Bool = false) {
         window?.setFrame(NSRect(x: 0, y: 0, width: 1280, height: 800), display: true)
         tabs.removeAll()
-        historyStore.clear()
+        if !preserveHistory {
+            historyStore.clear()
+        }
 
         let markdownTab = EditorTab.newDraft(name: "随笔·项目想法.md", language: .markdown)
         markdownTab.content = """
@@ -1494,8 +1496,9 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
         ## 明天要做
         1. 用真实样本再跑一遍 GB18030 检测
         2. 验证 1MB 大文件的滚动流畅度
+        3. 给自动备份补时序测试:0.8 秒去抖 + 5 秒兜底
 
-        > 随手记,随手得。
+        > 随手记,随手得 —— 备份做得好,才敢不按 Cmd+S。
         """
 
         let swiftTab = EditorTab.newDraft(name: "AutoSaveController.swift", language: .swift)
@@ -1553,12 +1556,18 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
         for tab in tabs where tab.needsFullHighlight {
             applyHighlight(tab)
         }
+        // 光标停在正文中间并带一段选区:状态栏可展示 行:列 / 选区字符数
+        let nsContent = markdownTab.content as NSString
+        let selRange = nsContent.range(of: "0.8 秒去抖 + 5 秒兜底")
+        if selRange.location != NSNotFound {
+            markdownTab.textView.selectedRange = selRange
+        }
         refreshAllUI()
 
         // 打开查找条并高亮命中,展示查找功能
         findBar.show(replaceMode: false)
         findHeightConstraint.constant = FindBarView.height
-        findBar.setQuery("保存")
+        findBar.setQuery("备份")
         updateFindMatches()
         window?.contentView?.layoutSubtreeIfNeeded()
     }
@@ -1567,15 +1576,53 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
     /// 注意:NSScrollView 的行号标尺不走离屏 draw 递归,需在 rep 上下文中手动补画。
     @discardableResult
     func renderDemoShot(to path: String) -> Bool {
-        guard let content = window?.contentView, let tab = activeTab else { return false }
+        guard let rep = demoContentRep() else { return false }
+        return demoWrite(rep, to: path)
+    }
+
+    /// 把窗口当前内容(含手动补画行号)压平为位图 rep,供多张截图复用。
+    func demoContentRep() -> NSBitmapImageRep? {
+        guard let content = window?.contentView, let tab = activeTab else { return nil }
         content.layoutSubtreeIfNeeded()
         tab.textView.layoutManager?.ensureLayout(for: tab.textView.textContainer ?? NSTextContainer())
         tab.ruler.needsDisplay = true
         content.layoutSubtreeIfNeeded()
 
         let bounds = content.bounds
-        guard let rep = content.bitmapImageRepForCachingDisplay(in: bounds) else { return false }
+        guard let rep = content.bitmapImageRepForCachingDisplay(in: bounds) else { return nil }
         content.cacheDisplay(in: bounds, to: rep)
+
+        // 状态栏:离屏渲染不递归绘制其子控件(NSTextField/NSButton),与行号标尺同类问题,
+        // 按真实数据手动补画文本条(文案/字体/配色与真实显示一致)
+        if let sctx = NSGraphicsContext(bitmapImageRep: rep) {
+            NSGraphicsContext.saveGraphicsState()
+            NSGraphicsContext.current = sctx
+            let sbFrame = statusBar.frame          // content 坐标系(y-up),底部 (0,0,1280,26)
+            let sbH = sbFrame.height
+            NSColor.windowBackgroundColor.setFill()
+            NSRect(x: sbFrame.origin.x, y: sbFrame.origin.y, width: sbFrame.width, height: sbH).fill()
+            NSColor.separatorColor.setFill()
+            NSRect(x: sbFrame.origin.x, y: sbFrame.origin.y + sbH - 1, width: sbFrame.width, height: 1).fill()
+
+            let cap = statusBar.demoCaptions
+            let font = NSFont.monospacedDigitSystemFont(ofSize: 11, weight: .regular)
+            let attrs: [NSAttributedString.Key: Any] = [
+                .font: font, .foregroundColor: NSColor.secondaryLabelColor]
+            let textY = sbFrame.origin.y + (sbH - 14) / 2
+            var x = sbFrame.origin.x + 12
+            for text in [cap.position, cap.count] where !text.isEmpty {
+                (text as NSString).draw(at: NSPoint(x: x, y: textY), withAttributes: attrs)
+                x += (text as NSString).size(withAttributes: attrs).width + 14
+            }
+            var right = sbFrame.origin.x + sbFrame.width - 12
+            for text in [cap.language, cap.eol, cap.encoding] where !text.isEmpty {
+                let w = (text as NSString).size(withAttributes: attrs).width
+                right -= w
+                (text as NSString).draw(at: NSPoint(x: right, y: textY), withAttributes: attrs)
+                right -= 14
+            }
+            NSGraphicsContext.restoreGraphicsState()
+        }
 
         // 手动补画行号:离屏渲染不走 NSScrollView 的标尺绘制管线。
         // rep 位图上下文为 y-up(已实验标定)。
@@ -1605,12 +1652,11 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
             lm.enumerateLineFragments(forGlyphRange: glyphRange) { fragRect, _, _, fragGlyphs, _ in
                 let charRange = lm.characterRange(forGlyphRange: fragGlyphs, actualGlyphRange: nil)
                 let line = index.lineNumber(at: charRange.location)
-                FileHandle.standardError.write("frag line=\(line) minY=\(fragRect.minY) maxY=\(fragRect.maxY) h=\(fragRect.height)\n".data(using: .utf8)!)
                 fragments.append((line, fragRect.minY))
             }
             guard !fragments.isEmpty else {
                 NSGraphicsContext.restoreGraphicsState()
-                return false
+                return nil
             }
             var lastLine = -1
             for frag in fragments {
@@ -1634,12 +1680,18 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
                     withAttributes: attrs)
             }
             NSGraphicsContext.restoreGraphicsState()
-
-            // 恢复标尺配置(下次真实显示时按用户偏好)
-            tab.scrollView.rulersVisible = Preferences.lineNumbersEnabled
-            tab.scrollView.hasVerticalRuler = Preferences.lineNumbersEnabled
         }
 
+        // 恢复标尺配置(下次真实显示时按用户偏好)
+        tab.scrollView.rulersVisible = Preferences.lineNumbersEnabled
+        tab.scrollView.hasVerticalRuler = Preferences.lineNumbersEnabled
+
+        return rep
+    }
+
+    /// rep 写成 PNG 文件
+    @discardableResult
+    func demoWrite(_ rep: NSBitmapImageRep, to path: String) -> Bool {
         guard let png = rep.representation(using: .png, properties: [:]) else { return false }
         do {
             try png.write(to: URL(fileURLWithPath: path))
@@ -1647,6 +1699,42 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
         } catch {
             return false
         }
+    }
+
+    // MARK: 演示截图扩展(README 配图)
+
+    /// 程序化展开查找/替换栏并配置查询(截图演示用)
+    func demoShowFind(query: String, replaceText: String? = nil, regex: Bool = false) {
+        let replaceMode = replaceText != nil
+        findBar.show(replaceMode: replaceMode)
+        findHeightConstraint.constant = replaceMode ? FindBarView.heightWithReplace : FindBarView.height
+        findBar.setRegexEnabled(regex)
+        findBar.setQuery(query)
+        if let replaceText { findBar.setReplacement(replaceText) }
+        updateFindMatches()
+        window?.contentView?.layoutSubtreeIfNeeded()
+    }
+
+    /// 裁剪 rep 底部状态栏条带(状态栏特写图)
+    @discardableResult
+    func demoCropStatusbar(from rep: NSBitmapImageRep, to path: String) -> Bool {
+        let width = rep.pixelsWide
+        let strip = Int(StatusBarView.height)
+        guard strip < rep.pixelsHigh,
+              let out = NSBitmapImageRep(
+                bitmapDataPlanes: nil, pixelsWide: width, pixelsHigh: strip,
+                bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false,
+                colorSpaceName: .calibratedRGB, bytesPerRow: 0, bitsPerPixel: 0),
+              let ctx = NSGraphicsContext(bitmapImageRep: out) else { return false }
+
+        // rep 位图上下文为 y-up:rect y=0 为底边,画布只露出来自原图底部的条带
+        NSGraphicsContext.saveGraphicsState()
+        NSGraphicsContext.current = ctx
+        NSColor.white.setFill()
+        NSBezierPath(rect: NSRect(x: 0, y: 0, width: CGFloat(width), height: CGFloat(strip))).fill()
+        rep.draw(in: NSRect(x: 0, y: 0, width: CGFloat(width), height: CGFloat(rep.pixelsHigh)))
+        NSGraphicsContext.restoreGraphicsState()
+        return demoWrite(out, to: path)
     }
 
     /// 切换激活标签(截图第二张用)
@@ -1657,6 +1745,43 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
             applyHighlight(tab)
         }
         refreshAllUI()
+    }
+
+    /// 窗口化演示:窗口贴靠菜单栏下方摆放,便于外部截屏把菜单栏与窗口一并收录
+    func demoPositionWindowUnderMenuBar() {
+        guard let win = window, let screen = win.screen ?? NSScreen.main else { return }
+        let menuHeight = screen.frame.maxY - screen.visibleFrame.maxY
+        var frame = win.frame
+        frame.origin = NSPoint(x: screen.frame.minX, y: screen.frame.maxY - menuHeight - frame.height)
+        win.setFrame(frame, display: true)
+    }
+
+    /// 窗口化演示:弹出关闭标签的保存确认(与真实关闭路径同一 UI)
+    func demoShowCloseConfirm() {
+        guard let tab = activeTab else { return }
+        askSaveBeforeClose(tabsToClose: [tab]) { _ in }
+    }
+
+    /// 窗口化演示:展开主菜单中的某项(供截屏菜单栏 + 下拉菜单)。
+    /// 菜单栏项自身不暴露 frame,按标题宽度逐项累加估算弹出位置。
+    func demoOpenMainMenu(named name: String) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { [weak self] in
+            guard let self, let item = NSApp.mainMenu?.item(withTitle: name), let menu = item.submenu,
+                  let screen = self.window?.screen ?? NSScreen.main else { return }
+            let font = NSFont.systemFont(ofSize: 13)
+            var x: CGFloat = 10 // 菜单栏最左侧(苹果菜单)起点
+            for current in NSApp.mainMenu?.items ?? [] {
+                if current == item { break }
+                // 苹果菜单标题为空,按图标宽度计
+                let titleWidth = current.title.isEmpty ? 30
+                    : current.title.size(withAttributes: [.font: font]).width
+                x += titleWidth + 31 // 菜单栏项左右留白
+            }
+            // 菜单应悬挂在菜单栏正下方,而不是盖住菜单栏文字
+            let menuBarHeight = screen.frame.maxY - screen.visibleFrame.maxY
+            let top = screen.frame.maxY - menuBarHeight - 2
+            menu.popUp(positioning: nil, at: NSPoint(x: x, y: top), in: nil)
+        }
     }
 
     // MARK: - 通用弹窗

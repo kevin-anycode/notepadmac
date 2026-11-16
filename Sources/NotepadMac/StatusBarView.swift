@@ -16,6 +16,12 @@ final class StatusBarView: NSView {
 
     static let height: CGFloat = 26
 
+    /// 演示截图:当前各段显示文本(离屏渲染补画状态栏用)
+    var demoCaptions: (position: String, count: String, encoding: String, eol: String, language: String) {
+        (positionLabel.stringValue, countLabel.stringValue,
+         encodingButton.title, eolButton.title, languageButton.title)
+    }
+
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         wantsLayer = true

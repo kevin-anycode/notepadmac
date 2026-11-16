@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-labelledby="flowTitle flowDesc">
+  <title id="flowTitle">三重自动备份与会话恢复机制</title>
+  <desc id="flowDesc">四条落盘路径(打字停顿 0.8 秒去抖、每 5 秒周期兜底、切换标签或失焦、正常退出)写入应用内快照目录;崩溃或重启后,会话恢复连同未保存的正文一并还原。</desc>
+
+  <rect width="1200" height="320" rx="24" fill="#F7F5FC" stroke="#E8E2F6" stroke-width="1"/>
+
+  <g id="triggers">
+    <g font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="18">
+      <rect x="64" y="70" width="320" height="44" rx="10" fill="#FFFFFF" stroke="#E6E0F4"/>
+      <text x="80" y="98" fill="#332D4A">打字停顿 → 去抖快照</text>
+      <text x="368" y="98" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-weight="600" fill="#D97706">0.8s</text>
+
+      <rect x="64" y="122" width="320" height="44" rx="10" fill="#FFFFFF" stroke="#E6E0F4"/>
+      <text x="80" y="150" fill="#332D4A">周期兜底快照</text>
+      <text x="368" y="150" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-weight="600" fill="#D97706">5.0s</text>
+
+      <rect x="64" y="174" width="320" height="44" rx="10" fill="#FFFFFF" stroke="#E6E0F4"/>
+      <text x="80" y="202" fill="#332D4A">切换标签 / 失焦</text>
+      <text x="368" y="202" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-weight="600" fill="#D97706">即时</text>
+
+      <rect x="64" y="226" width="320" height="44" rx="10" fill="#FFFFFF" stroke="#E6E0F4"/>
+      <text x="80" y="254" fill="#332D4A">正常退出 → 全部落盘</text>
+      <text x="368" y="254" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-weight="600" fill="#D97706">退出时</text>
+    </g>
+  </g>
+
+  <g id="arrows" stroke="#B9ACE4" stroke-width="2" fill="none">
+    <path d="M384 92 C 430 92, 430 160, 464 160"/>
+    <path d="M384 144 C 426 144, 430 160, 464 160"/>
+    <path d="M384 196 C 426 196, 430 160, 464 160"/>
+    <path d="M384 248 C 430 248, 430 160, 464 160"/>
+    <line x1="720" y1="160" x2="792" y2="160"/>
+  </g>
+  <g fill="#B9ACE4">
+    <polygon points="470,160 460,154 460,166"/>
+    <polygon points="798,160 788,154 788,166"/>
+  </g>
+  <text x="752" y="146" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="16" fill="#7C72A0">崩溃 / 重启</text>
+
+  <g id="vault">
+    <rect x="470" y="110" width="230" height="100" rx="14" fill="#8F5CF7"/>
+    <text x="494" y="147" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="22" font-weight="600" fill="#FFFFFF">应用内快照</text>
+    <text x="494" y="174" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="16" fill="#EFE9FF">drafts/&lt;UUID&gt;.txt</text>
+    <text x="494" y="196" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="16" fill="#EFE9FF">+ session.json</text>
+  </g>
+
+  <g id="restore">
+    <rect x="800" y="84" width="336" height="152" rx="14" fill="#FFFFFF" stroke="#E6E0F4" stroke-width="2"/>
+    <text x="824" y="122" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="22" font-weight="600" fill="#2A2440">重启后 · 会话恢复</text>
+    <text x="824" y="152" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="17" fill="#5A5378">标签顺序 · 激活位置 · 光标</text>
+    <text x="824" y="176" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="17" fill="#5A5378">滚动 · 编码 · 换行符 · 语言</text>
+    <text x="824" y="204" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="17" font-weight="600" fill="#D97706">未保存的正文,一并还原</text>
+  </g>
+
+  <text x="64" y="292" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="17" fill="#8A7FB0">0.8s 去抖 + 5s 兜底 + 退出落盘 —— 参数来自 AutoSaveController.swift</text>
+</svg>
