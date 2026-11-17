@@ -2,6 +2,10 @@
   <img src="assets/readme/hero.svg" width="100%" alt="NotepadMac —— 打开即写,永不丢失的 macOS 原生 Notepad++ 平替;右侧为多标签编辑器窗口,底部状态栏显示行:列、编码、换行符与语言">
 </p>
 
+<p align="center">
+  <a href="https://ifdian.net/a/anycode"><img src="https://img.shields.io/badge/%E2%98%95-%E8%AF%B7%E4%BD%9C%E8%80%85%E5%96%9D%E6%9D%AF%E5%92%96%E5%95%A1-ff813f" alt="请作者喝杯咖啡" /></a>
+</p>
+
 **macOS 原生文本编辑器 · 对标 Windows Notepad++ 的平替之作。**
 
 纯 Swift + AppKit 构建,零第三方依赖,无 Electron。核心设计哲学:**打开即写,永不丢失** —— 自动备份 + 会话恢复双保险,关闭应用再打开,一切如初。
@@ -173,3 +177,14 @@ TestsStandalone/main.swift     # 147 项单元断言
 ## 支持与反馈
 
 如果 NotepadMac 对你有帮助,欢迎点个 **Star ⭐** 支持一下!使用问题或功能建议欢迎提 [Issue](../../issues) 反馈,也欢迎 PR。
+
+### ☕ 支持这个项目
+
+你的赞助是持续更新的动力。赞赏完全自愿 —— Star、Issue 反馈和分享同样是对项目的支持。
+
+<p align="center">
+  <a href="https://ifdian.net/a/anycode"><img src="docs/sponsor/wechat-qr.png" width="360" alt="微信 / 支付宝赞赏码(点击前往爱发电)" /></a>
+</p>
+<p align="center">
+  <a href="https://ifdian.net/a/anycode"><img src="https://img.shields.io/badge/%E2%9A%A1-%E7%88%B1%E5%8F%91%E7%94%B5-blue" alt="爱发电" /></a>
+</p>

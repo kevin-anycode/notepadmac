@@ -1,0 +1,4 @@
+# GitHub 赞助配置:仓库页会显示「Sponsor this project」按钮
+# 使用方法:把下面的链接替换成你自己的收款页(如爱发电个人主页)
+# 说明:GitHub Sponsors 需要 Stripe 收款(中国大陆暂不支持),国内项目推荐爱发电/赞赏码
+custom: ['https://ifdian.net/a/anycode']
