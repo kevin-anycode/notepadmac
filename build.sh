@@ -28,6 +28,12 @@ mkdir -p "$CONTENTS/MacOS" "$CONTENTS/Resources"
 cp "$BIN" "$CONTENTS/MacOS/$APP_NAME"
 cp Scripts/Info.plist "$CONTENTS/Info.plist"
 
+# 本地化资源(key 为英文原文;英文系统回退显示 key,中文系统加载 zh-Hans 翻译)
+if [ -f "Resources/zh-Hans.lproj/Localizable.strings" ]; then
+    mkdir -p "$CONTENTS/Resources/zh-Hans.lproj"
+    cp "Resources/zh-Hans.lproj/Localizable.strings" "$CONTENTS/Resources/zh-Hans.lproj/Localizable.strings"
+fi
+
 # 应用图标(iconutil 缺失时跳过,不影响功能)
 if command -v iconutil >/dev/null 2>&1; then
     ICONSET="$BUILD_DIR/AppIcon.iconset"

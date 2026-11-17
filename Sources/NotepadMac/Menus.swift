@@ -12,24 +12,25 @@ extension NSMenu {
     }
 }
 
-/// 主菜单构建:全中文,快捷键兼顾 Notepad++ 习惯与 macOS 惯例。
+/// 主菜单构建:快捷键兼顾 Notepad++ 习惯与 macOS 惯例。
+/// 文案全部走本地化(key = 英文原文,中文翻译见 Resources/zh-Hans.lproj)。
 enum MenuBuilder {
 
     /// 历史条目的关闭时间:精确到分钟,保证连续关闭时顺序肉眼可辨
     private static func historyTimeText(_ date: Date) -> String {
-        let df = DateFormatter()
-        df.locale = Locale(identifier: "zh_CN")
         let cal = Calendar.current
+        let timeDF = DateFormatter()
+        timeDF.dateFormat = "HH:mm"
+        let timeText = timeDF.string(from: date)
         if cal.isDateInToday(date) {
-            df.dateFormat = "今天 HH:mm"
-            return df.string(from: date)
+            return LF("Today %@", timeText)
         }
         if cal.isDateInYesterday(date) {
-            df.dateFormat = "'昨天' HH:mm"
-            return df.string(from: date)
+            return LF("Yesterday %@", timeText)
         }
-        df.dateFormat = "M月d日 HH:mm"
-        return df.string(from: date)
+        let monthDay = DateFormatter()
+        monthDay.setLocalizedDateFormatFromTemplate("MMMd")
+        return "\(monthDay.string(from: date)) \(timeText)"
     }
 
     /// 历史文档子菜单的动态刷新:默认列最近 10 条,其余进「更多历史」(上限 50 条)。
@@ -43,7 +44,7 @@ enum MenuBuilder {
             let store = controller.historyStore
 
             guard !store.entries.isEmpty else {
-                let item = NSMenuItem(title: "(暂无历史文档)", action: nil, keyEquivalent: "")
+                let item = NSMenuItem(title: L("(No History)"), action: nil, keyEquivalent: "")
                 item.isEnabled = false
                 menu.addItem(item)
                 return
@@ -68,9 +69,9 @@ enum MenuBuilder {
             // 其余条目收纳进「更多历史」子菜单(总数最多 50)
             if store.entries.count > visibleCount {
                 menu.addItem(.separator())
-                let moreItem = NSMenuItem(title: "更多历史(\(store.entries.count - visibleCount) 条)",
+                let moreItem = NSMenuItem(title: LF("More History (%d)", store.entries.count - visibleCount),
                                           action: nil, keyEquivalent: "")
-                let moreMenu = NSMenu(title: "更多历史")
+                let moreMenu = NSMenu(title: L("More History"))
                 for entry in store.entries.dropFirst(visibleCount) {
                     moreMenu.addItem(entryItem(entry))
                 }
@@ -79,7 +80,7 @@ enum MenuBuilder {
             }
 
             menu.addItem(.separator())
-            menu.add(title: "清空历史文档",
+            menu.add(title: L("Clear History Documents"),
                      action: #selector(MainWindowController.clearHistoryDocuments)).target = controller
         }
     }
@@ -92,7 +93,7 @@ enum MenuBuilder {
             menu.removeAllItems()
             let recents = Preferences.recentFiles
             if recents.isEmpty {
-                let item = NSMenuItem(title: "(空)", action: nil, keyEquivalent: "")
+                let item = NSMenuItem(title: L("(Empty)"), action: nil, keyEquivalent: "")
                 item.isEnabled = false
                 menu.addItem(item)
             } else {
@@ -105,7 +106,7 @@ enum MenuBuilder {
                     menu.addItem(item)
                 }
                 menu.addItem(.separator())
-                let clear = NSMenuItem(title: "清空最近打开",
+                let clear = NSMenuItem(title: L("Clear Recent Files"),
                                        action: #selector(MainWindowController.clearRecentFiles),
                                        keyEquivalent: "")
                 clear.target = controller
@@ -119,35 +120,35 @@ enum MenuBuilder {
 
         // MARK: 应用菜单(第一项固定为应用名)
         let appMenu = NSMenu()
-        appMenu.add(title: "关于 NotepadMac", action: #selector(MainWindowController.showAbout)).target = controller
+        appMenu.add(title: L("About NotepadMac"), action: #selector(MainWindowController.showAbout)).target = controller
         appMenu.addItem(.separator())
-        appMenu.add(title: "打开数据目录…", action: #selector(MainWindowController.openDataFolder)).target = controller
-        appMenu.add(title: "字体…", action: #selector(MainWindowController.openFontPanel), keyEquivalent: "t").target = controller
+        appMenu.add(title: L("Open Data Directory…"), action: #selector(MainWindowController.openDataFolder)).target = controller
+        appMenu.add(title: L("Font…"), action: #selector(MainWindowController.openFontPanel), keyEquivalent: "t").target = controller
         appMenu.addItem(.separator())
-        let servicesItem = NSMenuItem(title: "服务", action: nil, keyEquivalent: "")
+        let servicesItem = NSMenuItem(title: L("Services"), action: nil, keyEquivalent: "")
         let servicesMenu = NSMenu()
         servicesItem.submenu = servicesMenu
         NSApp.servicesMenu = servicesMenu
         appMenu.addItem(servicesItem)
         appMenu.addItem(.separator())
-        appMenu.add(title: "隐藏 NotepadMac", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
-        let hideOthers = appMenu.add(title: "隐藏其他",
+        appMenu.add(title: L("Hide NotepadMac"), action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
+        let hideOthers = appMenu.add(title: L("Hide Others"),
                                      action: #selector(NSApplication.hideOtherApplications(_:)),
                                      keyEquivalent: "h")
         hideOthers.keyEquivalentModifierMask = [.command, .option]
-        appMenu.add(title: "全部显示", action: #selector(NSApplication.unhideAllApplications(_:)))
+        appMenu.add(title: L("Show All"), action: #selector(NSApplication.unhideAllApplications(_:)))
         appMenu.addItem(.separator())
-        appMenu.add(title: "退出 NotepadMac", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        appMenu.add(title: L("Quit NotepadMac"), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         let appItem = NSMenuItem(title: "NotepadMac", action: nil, keyEquivalent: "")
         appItem.submenu = appMenu
         main.addItem(appItem)
 
         // MARK: 文件
-        let file = NSMenu(title: "文件")
-        file.add(title: "新建标签", action: #selector(MainWindowController.newDraftTab), keyEquivalent: "n").target = controller
-        file.add(title: "打开…", action: #selector(MainWindowController.openFilesPanel), keyEquivalent: "o").target = controller
-        let recentsItem = NSMenuItem(title: "最近打开", action: nil, keyEquivalent: "")
-        let recentsMenu = NSMenu(title: "最近打开")
+        let file = NSMenu(title: L("File"))
+        file.add(title: L("New Tab"), action: #selector(MainWindowController.newDraftTab), keyEquivalent: "n").target = controller
+        file.add(title: L("Open…"), action: #selector(MainWindowController.openFilesPanel), keyEquivalent: "o").target = controller
+        let recentsItem = NSMenuItem(title: L("Open Recent"), action: nil, keyEquivalent: "")
+        let recentsMenu = NSMenu(title: L("Open Recent"))
         let provider = RecentsMenuProvider()
         provider.controller = controller
         recentsMenu.delegate = provider
@@ -157,13 +158,13 @@ enum MenuBuilder {
         file.addItem(recentsItem)
 
         // 历史文档(关闭过的文档留底,默认显示 10 条,上限 50 条)
-        let reopenLast = file.add(title: "重新打开上次关闭的文档",
+        let reopenLast = file.add(title: L("Reopen Last Closed Document"),
                                   action: #selector(MainWindowController.reopenLastClosedDoc),
                                   keyEquivalent: "T")
         reopenLast.keyEquivalentModifierMask = [.command, .shift]
         reopenLast.target = controller
-        let historyItem = NSMenuItem(title: "历史文档", action: nil, keyEquivalent: "")
-        let historyMenu = NSMenu(title: "历史文档")
+        let historyItem = NSMenuItem(title: L("History Documents"), action: nil, keyEquivalent: "")
+        let historyMenu = NSMenu(title: L("History Documents"))
         let historyProvider = HistoryMenuProvider()
         historyProvider.controller = controller
         historyMenu.delegate = historyProvider
@@ -171,139 +172,139 @@ enum MenuBuilder {
         historyItem.submenu = historyMenu
         file.addItem(historyItem)
         file.addItem(.separator())
-        file.add(title: "保存", action: #selector(MainWindowController.saveNow), keyEquivalent: "s").target = controller
-        let saveAs = file.add(title: "另存为…", action: #selector(MainWindowController.saveCurrentAs), keyEquivalent: "s")
+        file.add(title: L("Save"), action: #selector(MainWindowController.saveNow), keyEquivalent: "s").target = controller
+        let saveAs = file.add(title: L("Save As…"), action: #selector(MainWindowController.saveCurrentAs), keyEquivalent: "s")
         saveAs.keyEquivalentModifierMask = [.command, .shift]
         saveAs.target = controller
-        file.add(title: "从磁盘重新加载", action: #selector(MainWindowController.reloadActiveTab)).target = controller
+        file.add(title: L("Reload from Disk"), action: #selector(MainWindowController.reloadActiveTab)).target = controller
         file.addItem(.separator())
-        file.add(title: "关闭标签", action: #selector(MainWindowController.closeActiveTab), keyEquivalent: "w").target = controller
-        let closeWindow = file.add(title: "关闭窗口", action: #selector(NSWindow.performClose(_:)), keyEquivalent: "w")
+        file.add(title: L("Close Tab"), action: #selector(MainWindowController.closeActiveTab), keyEquivalent: "w").target = controller
+        let closeWindow = file.add(title: L("Close Window"), action: #selector(NSWindow.performClose(_:)), keyEquivalent: "w")
         closeWindow.keyEquivalentModifierMask = [.command, .shift]
-        let fileItem = NSMenuItem(title: "文件", action: nil, keyEquivalent: "")
+        let fileItem = NSMenuItem(title: L("File"), action: nil, keyEquivalent: "")
         fileItem.submenu = file
         main.addItem(fileItem)
 
         // MARK: 编辑
-        let edit = NSMenu(title: "编辑")
-        edit.add(title: "撤销", action: Selector(("undo:")), keyEquivalent: "z")
-        edit.add(title: "重做", action: Selector(("redo:")), keyEquivalent: "z")
+        let edit = NSMenu(title: L("Edit"))
+        edit.add(title: L("Undo"), action: Selector(("undo:")), keyEquivalent: "z")
+        edit.add(title: L("Redo"), action: Selector(("redo:")), keyEquivalent: "z")
             .keyEquivalentModifierMask = [.command, .shift]
         edit.addItem(.separator())
-        edit.add(title: "剪切", action: #selector(NSText.cut(_:)), keyEquivalent: "x")
-        edit.add(title: "拷贝", action: #selector(NSText.copy(_:)), keyEquivalent: "c")
-        edit.add(title: "粘贴", action: #selector(NSText.paste(_:)), keyEquivalent: "v")
-        edit.add(title: "全选", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
+        edit.add(title: L("Cut"), action: #selector(NSText.cut(_:)), keyEquivalent: "x")
+        edit.add(title: L("Copy"), action: #selector(NSText.copy(_:)), keyEquivalent: "c")
+        edit.add(title: L("Paste"), action: #selector(NSText.paste(_:)), keyEquivalent: "v")
+        edit.add(title: L("Select All"), action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
         edit.addItem(.separator())
-        edit.add(title: "插入时间戳", action: #selector(MainWindowController.insertTimestamp), keyEquivalent: ";").target = controller
+        edit.add(title: L("Insert Timestamp"), action: #selector(MainWindowController.insertTimestamp), keyEquivalent: ";").target = controller
         edit.addItem(.separator())
-        edit.add(title: "转换为小写", action: #selector(MainWindowController.lowercaseSelection)).target = controller
-        edit.add(title: "转换为大写", action: #selector(MainWindowController.uppercaseSelection)).target = controller
-        let editItem = NSMenuItem(title: "编辑", action: nil, keyEquivalent: "")
+        edit.add(title: L("Convert to Lowercase"), action: #selector(MainWindowController.lowercaseSelection)).target = controller
+        edit.add(title: L("Convert to Uppercase"), action: #selector(MainWindowController.uppercaseSelection)).target = controller
+        let editItem = NSMenuItem(title: L("Edit"), action: nil, keyEquivalent: "")
         editItem.submenu = edit
         main.addItem(editItem)
 
         // MARK: 查找
-        let find = NSMenu(title: "查找")
-        find.add(title: "查找…", action: #selector(MainWindowController.showFind), keyEquivalent: "f").target = controller
-        find.add(title: "查找下一个", action: #selector(MainWindowController.findNext), keyEquivalent: "g").target = controller
-        let findPrev = find.add(title: "查找上一个", action: #selector(MainWindowController.findPrevious), keyEquivalent: "g")
+        let find = NSMenu(title: L("Find"))
+        find.add(title: L("Find…"), action: #selector(MainWindowController.showFind), keyEquivalent: "f").target = controller
+        find.add(title: L("Find Next"), action: #selector(MainWindowController.findNext), keyEquivalent: "g").target = controller
+        let findPrev = find.add(title: L("Find Previous"), action: #selector(MainWindowController.findPrevious), keyEquivalent: "g")
         findPrev.keyEquivalentModifierMask = [.command, .shift]
         findPrev.target = controller
-        let replace = find.add(title: "替换…", action: #selector(MainWindowController.showReplace), keyEquivalent: "f")
+        let replace = find.add(title: L("Replace…"), action: #selector(MainWindowController.showReplace), keyEquivalent: "f")
         replace.keyEquivalentModifierMask = [.command, .option]
         replace.target = controller
         find.addItem(.separator())
-        find.add(title: "跳转到行…", action: #selector(MainWindowController.gotoLine), keyEquivalent: "l").target = controller
-        let findItem = NSMenuItem(title: "查找", action: nil, keyEquivalent: "")
+        find.add(title: L("Go to Line…"), action: #selector(MainWindowController.gotoLine), keyEquivalent: "l").target = controller
+        let findItem = NSMenuItem(title: L("Find"), action: nil, keyEquivalent: "")
         findItem.submenu = find
         main.addItem(findItem)
 
         // MARK: 视图
-        let view = NSMenu(title: "视图")
-        view.add(title: "放大", action: #selector(MainWindowController.zoomIn), keyEquivalent: "=").target = controller
-        view.add(title: "缩小", action: #selector(MainWindowController.zoomOut), keyEquivalent: "-").target = controller
-        view.add(title: "实际大小", action: #selector(MainWindowController.resetFontSize), keyEquivalent: "0").target = controller
+        let view = NSMenu(title: L("View"))
+        view.add(title: L("Zoom In"), action: #selector(MainWindowController.zoomIn), keyEquivalent: "=").target = controller
+        view.add(title: L("Zoom Out"), action: #selector(MainWindowController.zoomOut), keyEquivalent: "-").target = controller
+        view.add(title: L("Actual Size"), action: #selector(MainWindowController.resetFontSize), keyEquivalent: "0").target = controller
         view.addItem(.separator())
-        let wrap = view.add(title: "自动换行", action: #selector(MainWindowController.toggleWrap))
+        let wrap = view.add(title: L("Word Wrap"), action: #selector(MainWindowController.toggleWrap))
         wrap.keyEquivalentModifierMask = [.command, .option]
         wrap.target = controller
-        view.add(title: "显示行号", action: #selector(MainWindowController.toggleLineNumbers)).target = controller
-        view.add(title: "显示状态栏", action: #selector(MainWindowController.toggleStatusBar)).target = controller
-        view.add(title: "窗口置顶", action: #selector(MainWindowController.toggleOnTop)).target = controller
-        let viewItem = NSMenuItem(title: "视图", action: nil, keyEquivalent: "")
+        view.add(title: L("Show Line Numbers"), action: #selector(MainWindowController.toggleLineNumbers)).target = controller
+        view.add(title: L("Show Status Bar"), action: #selector(MainWindowController.toggleStatusBar)).target = controller
+        view.add(title: L("Keep Window on Top"), action: #selector(MainWindowController.toggleOnTop)).target = controller
+        let viewItem = NSMenuItem(title: L("View"), action: nil, keyEquivalent: "")
         viewItem.submenu = view
         main.addItem(viewItem)
 
         // MARK: 编码
-        let encoding = NSMenu(title: "编码")
+        let encoding = NSMenu(title: L("Encoding"))
         for enc in TextEncoding.allCases {
-            let item = encoding.add(title: "转换为 \(enc.displayName)",
+            let item = encoding.add(title: LF("Convert to %@", enc.displayName),
                                     action: #selector(MainWindowController.convertEncodingTo(_:)))
             item.representedObject = enc.rawValue
             item.target = controller
         }
-        let encodingItem = NSMenuItem(title: "编码", action: nil, keyEquivalent: "")
+        let encodingItem = NSMenuItem(title: L("Encoding"), action: nil, keyEquivalent: "")
         encodingItem.submenu = encoding
         main.addItem(encodingItem)
 
         // MARK: 换行符
-        let eol = NSMenu(title: "换行符")
+        let eol = NSMenu(title: L("Line Endings"))
         for e in LineEnding.allCases {
-            let item = eol.add(title: "转换为 \(e.displayName)",
+            let item = eol.add(title: LF("Convert to %@", e.displayName),
                                action: #selector(MainWindowController.convertEOLTo(_:)))
             item.representedObject = e.rawValue
             item.target = controller
         }
-        let eolItem = NSMenuItem(title: "换行符", action: nil, keyEquivalent: "")
+        let eolItem = NSMenuItem(title: L("Line Endings"), action: nil, keyEquivalent: "")
         eolItem.submenu = eol
         main.addItem(eolItem)
 
         // MARK: 语言
-        let language = NSMenu(title: "语言")
+        let language = NSMenu(title: L("Language"))
         for lang in ProgLanguage.allCases {
             let item = language.add(title: lang.displayName,
                                     action: #selector(MainWindowController.setLanguageTo(_:)))
             item.representedObject = lang.rawValue
             item.target = controller
         }
-        let languageItem = NSMenuItem(title: "语言", action: nil, keyEquivalent: "")
+        let languageItem = NSMenuItem(title: L("Language"), action: nil, keyEquivalent: "")
         languageItem.submenu = language
         main.addItem(languageItem)
 
         // MARK: 标签
-        let tabs = NSMenu(title: "标签")
-        let nextTab = tabs.add(title: "下一个标签",
+        let tabs = NSMenu(title: L("Tabs"))
+        let nextTab = tabs.add(title: L("Next Tab"),
                                action: #selector(MainWindowController.selectNextTab),
                                keyEquivalent: "\t")
         nextTab.keyEquivalentModifierMask = [.control]
         nextTab.target = controller
-        let prevTab = tabs.add(title: "上一个标签",
+        let prevTab = tabs.add(title: L("Previous Tab"),
                                action: #selector(MainWindowController.selectPreviousTab),
                                keyEquivalent: "\t")
         prevTab.keyEquivalentModifierMask = [.control, .shift]
         prevTab.target = controller
         tabs.addItem(.separator())
-        tabs.add(title: "关闭其他标签", action: #selector(MainWindowController.closeOtherTabs)).target = controller
-        tabs.add(title: "关闭全部标签", action: #selector(MainWindowController.closeAllTabs)).target = controller
-        let tabsItem = NSMenuItem(title: "标签", action: nil, keyEquivalent: "")
+        tabs.add(title: L("Close Other Tabs"), action: #selector(MainWindowController.closeOtherTabs)).target = controller
+        tabs.add(title: L("Close All Tabs"), action: #selector(MainWindowController.closeAllTabs)).target = controller
+        let tabsItem = NSMenuItem(title: L("Tabs"), action: nil, keyEquivalent: "")
         tabsItem.submenu = tabs
         main.addItem(tabsItem)
 
         // MARK: 窗口
-        let window = NSMenu(title: "窗口")
-        window.add(title: "最小化", action: #selector(NSWindow.performMiniaturize(_:)), keyEquivalent: "m")
-        window.add(title: "缩放窗口", action: #selector(NSWindow.performZoom(_:)))
-        let windowItem = NSMenuItem(title: "窗口", action: nil, keyEquivalent: "")
+        let window = NSMenu(title: L("Window"))
+        window.add(title: L("Minimize"), action: #selector(NSWindow.performMiniaturize(_:)), keyEquivalent: "m")
+        window.add(title: L("Zoom Window"), action: #selector(NSWindow.performZoom(_:)))
+        let windowItem = NSMenuItem(title: L("Window"), action: nil, keyEquivalent: "")
         windowItem.submenu = window
         main.addItem(windowItem)
         NSApp.windowsMenu = window
 
         // MARK: 帮助
-        let help = NSMenu(title: "帮助")
-        help.add(title: "关于 NotepadMac", action: #selector(MainWindowController.showAbout)).target = controller
-        help.add(title: "打开数据目录…", action: #selector(MainWindowController.openDataFolder)).target = controller
-        let helpItem = NSMenuItem(title: "帮助", action: nil, keyEquivalent: "")
+        let help = NSMenu(title: L("Help"))
+        help.add(title: L("About NotepadMac"), action: #selector(MainWindowController.showAbout)).target = controller
+        help.add(title: L("Open Data Directory…"), action: #selector(MainWindowController.openDataFolder)).target = controller
+        let helpItem = NSMenuItem(title: L("Help"), action: nil, keyEquivalent: "")
         helpItem.submenu = help
         main.addItem(helpItem)
         NSApp.helpMenu = help

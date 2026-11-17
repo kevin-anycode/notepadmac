@@ -372,17 +372,17 @@ final class TabBarView: NSView {
             menu.addItem(item)
         }
 
-        addItem("重新打开上次关闭的文档") { [weak self] in
+        addItem(L("Reopen Last Closed Document")) { [weak self] in
             if let self = self { self.onReopenLastClosed?() }
         }
         menu.addItem(.separator())
-        addItem("关闭标签") { [weak self] in
+        addItem(L("Close Tab")) { [weak self] in
             if let self = self { self.onContextAction?(index, .single) }
         }
-        addItem("关闭其他标签") { [weak self] in
+        addItem(L("Close Other Tabs")) { [weak self] in
             if let self = self { self.onContextAction?(index, .others) }
         }
-        addItem("关闭全部标签") { [weak self] in
+        addItem(L("Close All Tabs")) { [weak self] in
             if let self = self { self.onContextAction?(index, .all) }
         }
         return menu

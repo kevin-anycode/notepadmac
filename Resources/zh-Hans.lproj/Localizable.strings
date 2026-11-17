@@ -1,0 +1,166 @@
+/* NotepadMac 中文翻译:key = 英文原文(代码中的本地化 key),value = 简体中文显示文案 */
+
+/* ===== 菜单栏(Menus.swift) ===== */
+"About NotepadMac" = "关于 NotepadMac";
+"Open Data Directory…" = "打开数据目录…";
+"Font…" = "字体…";
+"Services" = "服务";
+"Hide NotepadMac" = "隐藏 NotepadMac";
+"Hide Others" = "隐藏其他";
+"Show All" = "全部显示";
+"Quit NotepadMac" = "退出 NotepadMac";
+"File" = "文件";
+"New Tab" = "新建标签";
+"Open…" = "打开…";
+"Open Recent" = "最近打开";
+"Reopen Last Closed Document" = "重新打开上次关闭的文档";
+"History Documents" = "历史文档";
+"Save" = "保存";
+"Save As…" = "另存为…";
+"Reload from Disk" = "从磁盘重新加载";
+"Close Tab" = "关闭标签";
+"Close Window" = "关闭窗口";
+"Edit" = "编辑";
+"Undo" = "撤销";
+"Redo" = "重做";
+"Cut" = "剪切";
+"Copy" = "拷贝";
+"Paste" = "粘贴";
+"Select All" = "全选";
+"Insert Timestamp" = "插入时间戳";
+"Convert to Lowercase" = "转换为小写";
+"Convert to Uppercase" = "转换为大写";
+"Find" = "查找";
+"Find…" = "查找…";
+"Find Next" = "查找下一个";
+"Find Previous" = "查找上一个";
+"Replace…" = "替换…";
+"Go to Line…" = "跳转到行…";
+"View" = "视图";
+"Zoom In" = "放大";
+"Zoom Out" = "缩小";
+"Actual Size" = "实际大小";
+"Word Wrap" = "自动换行";
+"Show Line Numbers" = "显示行号";
+"Show Status Bar" = "显示状态栏";
+"Keep Window on Top" = "窗口置顶";
+"Encoding" = "编码";
+"Convert to %@" = "转换为 %@";
+"Line Endings" = "换行符";
+"Language" = "语言";
+"Tabs" = "标签";
+"Next Tab" = "下一个标签";
+"Previous Tab" = "上一个标签";
+"Close Other Tabs" = "关闭其他标签";
+"Close All Tabs" = "关闭全部标签";
+"Window" = "窗口";
+"Minimize" = "最小化";
+"Zoom Window" = "缩放窗口";
+"Help" = "帮助";
+
+/* ===== 历史文档菜单 ===== */
+"Today %@" = "今天 %@";
+"Yesterday %@" = "昨天 %@";
+"(No History)" = "(暂无历史文档)";
+"More History (%d)" = "更多历史(%d 条)";
+"More History" = "更多历史";
+"Clear History Documents" = "清空历史文档";
+"(Empty)" = "(空)";
+"Clear Recent Files" = "清空最近打开";
+
+/* ===== 查找栏(FindBarView.swift) ===== */
+"Previous" = "上一个";
+"Next" = "下一个";
+"Replace ▸" = "替换 ▸";
+"Replace ▾" = "替换 ▾";
+"Replace with" = "替换为";
+"Replace" = "替换";
+"Replace All" = "全部替换";
+"Find text (Enter for next)" = "查找内容(Enter 下一个)";
+"Replacement text" = "替换内容";
+"Match case" = "区分大小写";
+"Regular expression" = "正则表达式";
+"Previous match (Cmd+Shift+G)" = "上一个匹配 (Cmd+Shift+G)";
+"Next match (Cmd+G)" = "下一个匹配 (Cmd+G)";
+"Close (Esc)" = "关闭 (Esc)";
+"Expand replace field (Cmd+Alt+F)" = "展开替换输入框 (Cmd+Alt+F)";
+
+/* ===== 状态栏(StatusBarView.swift) ===== */
+"Plain Text" = "纯文本";
+"Click to change file encoding" = "点击切换文件编码";
+"Click to change line endings" = "点击切换换行符类型";
+"Click to change syntax language" = "点击切换语法高亮语言";
+"Line %d, Column %d" = "行 %d, 列 %d";
+" · %d selected" = " · 已选 %d 字符";
+"%@ characters · %d lines" = "%@ 字符 · %d 行";
+
+/* ===== 新建草稿 ===== */
+"Untitled-%d" = "未命名-%d";
+"%@ (Restored from snapshot)" = "%@(已从快照恢复)";
+
+/* ===== 打开/保存(MainWindowController.swift) ===== */
+"Cannot Open File" = "无法打开文件";
+"%@ could not be read (file missing or no permission)." = "%@ 读取失败(文件不存在或没有读取权限)。";
+"Choose a text file to edit" = "选择要编辑的文本文件";
+"Saved" = "已保存";
+"Save failed, try Save As" = "保存失败,请尝试另存为";
+
+/* ===== 关闭前保存确认 ===== */
+"Save changes to “%@”?" = "是否将更改保存到“%@”?";
+"This document has unsaved changes (auto save usually keeps up; this appears only for very recent edits).\nChoosing “Don't Save” discards them." = "该文档仍有未写盘的修改(自动保存通常已完成,此提示只在极新的修改尚未落盘时出现)。\n选择“不保存”将丢弃这些修改。";
+"Save draft “%@”?" = "是否保存草稿“%@”?";
+"Choose “Save” to pick a location; “Don't Save” discards the draft." = "选择“保存”可挑选存放位置;选择“不保存”将丢弃草稿内容。";
+"%d documents have unsaved changes" = "有 %d 个文档存在未写盘的修改";
+"Save these changes?" = "是否保存这些修改?";
+"Don't Save" = "不保存";
+"Cancel" = "取消";
+
+/* ===== 从磁盘重新加载 ===== */
+"Reload file?" = "重新加载文件?";
+"This file has unsaved changes; reloading will discard them." = "该文件有未落盘的修改,重新加载将丢弃这些修改。";
+"Reload" = "重新加载";
+
+/* ===== 退出确认 ===== */
+"%d documents unsaved" = "有 %d 个文档未保存";
+"Unsaved changes are already backed up; they are written to the original file only if you choose “Save”." = "未保存的修改已自动备份,但只有选择“保存”才会写入原文件。";
+"Save and Quit" = "保存并退出";
+"Quit without Saving" = "不保存退出";
+
+/* ===== 自动保存失败 ===== */
+"Auto Save Failed" = "自动保存失败";
+"Cannot write %@: %@\n\nContent is kept in memory; use “Save As…” to choose a new location." = "无法写入 %@:%@\n\n内容已保留在内存中,请用「另存为」选择新的位置。";
+"Got it" = "知道了";
+
+/* ===== 历史文档(MainWindowController) ===== */
+"This history document no longer exists" = "该历史文档的内容已不存在";
+"No history documents" = "暂无历史文档";
+"Clear history documents?" = "清空历史文档?";
+"All %d history entries and their content backups will be deleted. This cannot be undone." = "全部 %d 条历史记录及其内容备份将被删除,无法恢复。";
+"Clear" = "清空";
+"History documents cleared" = "历史文档已清空";
+
+/* ===== 外部修改冲突 ===== */
+"File changed in another program" = "文件已在其他程序中修改";
+"%@ changed on disk while this tab has edits.\n\nKeep which version? (A copy of the other version is saved in the app snapshot)" = "%@ 在磁盘上发生了变化,而本页也有修改。\n\n保留哪个版本?(另一个版本的副本已保存在应用快照中)";
+"Keep My Version" = "保留我的内容";
+"Load Disk Version" = "加载磁盘版本";
+
+/* ===== 查找状态 ===== */
+"No matches" = "无匹配";
+"%d matches" = "%d 处匹配";
+"Replaced to end" = "已替换至末尾";
+"Replaced %d" = "已替换 %d 处";
+
+/* ===== 跳转到行 ===== */
+"Go to Line" = "跳转到行";
+"Enter line number (1 - %d):" = "输入行号(1 - %d):";
+"Go" = "跳转";
+
+/* ===== 编码/换行符转换提示 ===== */
+"Cannot convert encoding" = "无法转换编码";
+"Content contains characters that cannot be represented in %@.\nSave as UTF-8 first, or remove those characters." = "内容包含「%@」无法表示的字符。\n请先另存为 UTF-8,或移除这些字符后再试。";
+"Encoding converted to %@" = "编码已转换为 %@";
+"Line endings converted to %@" = "换行符已转换为 %@";
+
+/* ===== 关于弹窗 ===== */
+"Native macOS text editor\nA worthy Notepad++ alternative\n\nAuto save · Session restore · Tabs · Syntax highlighting\n\n" = "macOS 原生文本编辑器\n对标 Notepad++ 的平替之作\n\n自动保存 · 会话恢复 · 多标签 · 语法高亮\n\n";

@@ -23,6 +23,7 @@ echo "==> 编译测试运行器"
 swiftc -O \
     -I "$MODULE_DIR" \
     "$MODULE_DIR/libNotepadCore.a" \
+    Sources/NotepadMac/Localization.swift \
     Sources/NotepadMac/Preferences.swift \
     Sources/NotepadMac/EditorTextView.swift \
     Sources/NotepadMac/LineNumberRulerView.swift \

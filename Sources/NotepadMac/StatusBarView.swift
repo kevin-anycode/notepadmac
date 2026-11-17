@@ -11,7 +11,7 @@ final class StatusBarView: NSView {
     private let countLabel = NSTextField(labelWithString: "")
     private let encodingButton = NSButton(title: "UTF-8", target: nil, action: nil)
     private let eolButton = NSButton(title: "LF", target: nil, action: nil)
-    private let languageButton = NSButton(title: "纯文本", target: nil, action: nil)
+    private let languageButton = NSButton(title: L("Plain Text"), target: nil, action: nil)
     private var targets: [ClosureTarget] = []
 
     static let height: CGFloat = 26
@@ -41,9 +41,9 @@ final class StatusBarView: NSView {
             button.contentTintColor = .secondaryLabelColor
             button.imagePosition = .noImage
         }
-        encodingButton.toolTip = "点击切换文件编码"
-        eolButton.toolTip = "点击切换换行符类型"
-        languageButton.toolTip = "点击切换语法高亮语言"
+        encodingButton.toolTip = L("Click to change file encoding")
+        eolButton.toolTip = L("Click to change line endings")
+        languageButton.toolTip = L("Click to change syntax language")
 
         let stack = NSStackView(views: [positionLabel, countLabel, encodingButton, eolButton, languageButton])
         stack.orientation = .horizontal
@@ -107,9 +107,9 @@ final class StatusBarView: NSView {
 
     func updatePosition(line: Int, column: Int, selectedChars: Int) {
         if overrideMessage != nil { return }
-        var text = "行 \(line), 列 \(column)"
+        var text = LF("Line %d, Column %d", line, column)
         if selectedChars > 0 {
-            text += " · 已选 \(selectedChars) 字符"
+            text += LF(" · %d selected", selectedChars)
         }
         positionLabel.stringValue = text
     }
@@ -118,7 +118,7 @@ final class StatusBarView: NSView {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         let chars = formatter.string(from: NSNumber(value: totalChars)) ?? "\(totalChars)"
-        countLabel.stringValue = "\(chars) 字符 · \(totalLines) 行"
+        countLabel.stringValue = LF("%@ characters · %d lines", chars, totalLines)
     }
 
     func updateMeta(encoding: String, eol: String, language: String) {
