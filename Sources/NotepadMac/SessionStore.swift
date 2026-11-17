@@ -112,7 +112,7 @@ final class SessionStore {
                 restored = tab
             } else if let content = store.readDraft(id: state.draftID) {
                 // 2. 文件没了:回退到快照(这就是"退出重开必然有记录"的兜底)
-                let tab = EditorTab.newDraft(name: state.displayName + "(已从快照恢复)")
+                let tab = EditorTab.newDraft(name: LF("%@ (Restored from snapshot)", state.displayName))
                 tab.encoding = TextEncoding(rawValue: state.encoding) ?? .utf8
                 tab.eol = LineEnding(rawValue: state.eol) ?? .lf
                 tab.language = ProgLanguage(rawValue: state.language) ?? .plain

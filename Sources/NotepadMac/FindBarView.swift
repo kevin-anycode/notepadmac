@@ -13,20 +13,20 @@ final class FindBarView: NSView {
     var onCloseRequest: (() -> Void)?
 
     // 子视图
-    private let titleLabel = NSTextField(labelWithString: "查找")
+    private let titleLabel = NSTextField(labelWithString: L("Find"))
     private let queryField = NSTextField()
     private let caseButton = NSButton(title: "Aa", target: nil, action: nil)
     private let regexButton = NSButton(title: ".*", target: nil, action: nil)
     private let matchCountLabel = NSTextField(labelWithString: "")
-    private let prevButton = NSButton(title: "上一个", target: nil, action: nil)
-    private let nextButton = NSButton(title: "下一个", target: nil, action: nil)
-    private let expandButton = NSButton(title: "替换 ▸", target: nil, action: nil)
+    private let prevButton = NSButton(title: L("Previous"), target: nil, action: nil)
+    private let nextButton = NSButton(title: L("Next"), target: nil, action: nil)
+    private let expandButton = NSButton(title: L("Replace ▸"), target: nil, action: nil)
     private let closeButton = NSButton(title: "✕", target: nil, action: nil)
 
-    private let replaceLabel = NSTextField(labelWithString: "替换为")
+    private let replaceLabel = NSTextField(labelWithString: L("Replace with"))
     private let replaceField = NSTextField()
-    private let replaceOneButton = NSButton(title: "替换", target: nil, action: nil)
-    private let replaceAllButton = NSButton(title: "全部替换", target: nil, action: nil)
+    private let replaceOneButton = NSButton(title: L("Replace"), target: nil, action: nil)
+    private let replaceAllButton = NSButton(title: L("Replace All"), target: nil, action: nil)
 
     private var targets: [ClosureTarget] = []
     private(set) var replaceMode = false
@@ -39,23 +39,23 @@ final class FindBarView: NSView {
         wantsLayer = true
         layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
 
-        setupField(queryField, placeholder: "查找内容(Enter 下一个)")
-        setupField(replaceField, placeholder: "替换内容")
+        setupField(queryField, placeholder: L("Find text (Enter for next)"))
+        setupField(replaceField, placeholder: L("Replacement text"))
         for label in [titleLabel, replaceLabel] {
             label.font = .systemFont(ofSize: 12)
             label.textColor = .secondaryLabelColor
             label.setContentHuggingPriority(.required, for: .horizontal)
         }
 
-        setupToggle(caseButton, tooltip: "区分大小写")
-        setupToggle(regexButton, tooltip: "正则表达式")
+        setupToggle(caseButton, tooltip: L("Match case"))
+        setupToggle(regexButton, tooltip: L("Regular expression"))
         matchCountLabel.font = .monospacedDigitSystemFont(ofSize: 11, weight: .regular)
         matchCountLabel.textColor = .secondaryLabelColor
         matchCountLabel.setContentHuggingPriority(.required, for: .horizontal)
 
-        setupSmallButton(prevButton, symbol: "chevron.up", tooltip: "上一个匹配 (Cmd+Shift+G)")
-        setupSmallButton(nextButton, symbol: "chevron.down", tooltip: "下一个匹配 (Cmd+G)")
-        setupSmallButton(closeButton, symbol: "xmark", tooltip: "关闭 (Esc)")
+        setupSmallButton(prevButton, symbol: "chevron.up", tooltip: L("Previous match (Cmd+Shift+G)"))
+        setupSmallButton(nextButton, symbol: "chevron.down", tooltip: L("Next match (Cmd+G)"))
+        setupSmallButton(closeButton, symbol: "xmark", tooltip: L("Close (Esc)"))
 
         for button in [expandButton, replaceOneButton, replaceAllButton] {
             button.isBordered = true
@@ -63,7 +63,7 @@ final class FindBarView: NSView {
             button.font = .systemFont(ofSize: 12)
             button.controlSize = .small
         }
-        expandButton.toolTip = "展开替换输入框 (Cmd+Alt+F)"
+        expandButton.toolTip = L("Expand replace field (Cmd+Alt+F)")
         replaceAllButton.keyEquivalentModifierMask = []
 
         // 第一行
@@ -156,7 +156,7 @@ final class FindBarView: NSView {
         replaceField.isHidden = !visible
         replaceOneButton.isHidden = !visible
         replaceAllButton.isHidden = !visible
-        expandButton.title = visible ? "替换 ▾" : "替换 ▸"
+        expandButton.title = visible ? L("Replace ▾") : L("Replace ▸")
     }
 
     // MARK: 状态

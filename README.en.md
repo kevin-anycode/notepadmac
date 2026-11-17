@@ -2,6 +2,10 @@
   <img src="assets/readme/hero.svg" width="100%" alt="NotepadMac —— a native macOS Notepad++ alternative: open and type, never lose anything; the right side shows a multi-tab editor window with a status bar for line:column, encoding, line endings, and language">
 </p>
 
+<p align="center">
+  <a href="https://ifdian.net/a/anycode"><img src="https://img.shields.io/badge/%E2%98%95-Support%20this%20project-ff813f" alt="Support this project" /></a>
+</p>
+
 **A native macOS text editor · A worthy Notepad++ alternative.**
 
 Built with pure Swift + AppKit, zero third-party dependencies, no Electron. Core design philosophy: **open and type, never lose anything** — auto backup + session restore as double insurance. Close the app and reopen it: everything is exactly as you left it.
@@ -173,3 +177,14 @@ TestsStandalone/main.swift     # 147 unit assertions
 ## Support
 
 If NotepadMac helps you, please give it a **Star ⭐** — bug reports and feature requests are welcome at [Issues](../../issues), PRs are welcome too.
+
+### ☕ Support this project
+
+Your sponsorship keeps the project going. It is entirely optional — stars, issue reports and sharing help just as much.
+
+<p align="center">
+  <a href="https://ifdian.net/a/anycode"><img src="docs/sponsor/wechat-qr.png" width="360" alt="WeChat / Alipay QR code (click to visit Afdian)" /></a>
+</p>
+<p align="center">
+  <a href="https://ifdian.net/a/anycode"><img src="https://img.shields.io/badge/%E2%9A%A1-Afdian-blue" alt="Afdian" /></a>
+</p>

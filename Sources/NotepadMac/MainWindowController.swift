@@ -181,7 +181,8 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
     }
 
     private func updateDraftCounterFromRestored() {
-        let pattern = try? NSRegularExpression(pattern: "^未命名-(\\d+)$")
+        // 兼容历史存档:旧版本创建的草稿名为中文「未命名-N」,英文系统下新草稿为「Untitled-N」
+        let pattern = try? NSRegularExpression(pattern: "^(?:未命名-|Untitled-)(\\d+)$")
         var maxN = 0
         for tab in tabs where tab.fileURL == nil {
             if let re = pattern, let m = re.firstMatch(in: tab.displayName, range: NSRange(tab.displayName.startIndex..., in: tab.displayName)) {
@@ -212,7 +213,7 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
     }
 
     private func addDraftTab(activate: Bool) {
-        let tab = EditorTab.newDraft(name: "未命名-\(draftCounter)")
+        let tab = EditorTab.newDraft(name: LF("Untitled-%d", draftCounter))
         draftCounter += 1
         tabs.append(tab)
         tab.textView.delegate = self
@@ -246,7 +247,8 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
                 openedPaths.append(path)
                 selectTab(at: tabs.count - 1)
             } else {
-                showAlert("无法打开文件", "\(url.lastPathComponent) 读取失败(文件不存在或没有读取权限)。")
+                showAlert(L("Cannot Open File"),
+                          LF("%@ could not be read (file missing or no permission).", url.lastPathComponent))
             }
         }
         if !openedPaths.isEmpty {
@@ -381,20 +383,20 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
         let alert = NSAlert()
         if dirty.count == 1, let tab = dirty.first {
             if let url = tab.fileURL {
-                alert.messageText = "是否将更改保存到“\(url.lastPathComponent)”?"
-                alert.informativeText = "该文档仍有未写盘的修改(自动保存通常已完成,此提示只在极新的修改尚未落盘时出现)。\n选择“不保存”将丢弃这些修改。"
+                alert.messageText = LF("Save changes to “%@”?", url.lastPathComponent)
+                alert.informativeText = L("This document has unsaved changes (auto save usually keeps up; this appears only for very recent edits).\nChoosing “Don't Save” discards them.")
             } else {
-                alert.messageText = "是否保存草稿“\(tab.displayName)”?"
-                alert.informativeText = "选择“保存”可挑选存放位置;选择“不保存”将丢弃草稿内容。"
+                alert.messageText = LF("Save draft “%@”?", tab.displayName)
+                alert.informativeText = L("Choose “Save” to pick a location; “Don't Save” discards the draft.")
             }
         } else {
-            alert.messageText = "有 \(dirty.count) 个文档存在未写盘的修改"
-            alert.informativeText = "是否保存这些修改?"
+            alert.messageText = LF("%d documents have unsaved changes", dirty.count)
+            alert.informativeText = L("Save these changes?")
         }
         alert.alertStyle = .warning
-        alert.addButton(withTitle: "保存")
-        alert.addButton(withTitle: "不保存")
-        alert.addButton(withTitle: "取消")
+        alert.addButton(withTitle: L("Save"))
+        alert.addButton(withTitle: L("Don't Save"))
+        alert.addButton(withTitle: L("Cancel"))
 
         alert.beginSheetModal(for: win) { [weak self] response in
             switch response {
@@ -509,7 +511,7 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
         panel.canChooseFiles = true
         panel.canChooseDirectories = false
         panel.allowsMultipleSelection = true
-        panel.message = "选择要编辑的文本文件"
+        panel.message = L("Choose a text file to edit")
         panel.beginSheetModal(for: win) { [weak self] response in
             guard response == .OK else { return }
             self?.openFiles(urls: Array(panel.urls))
@@ -534,7 +536,7 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
         }
         writeTab(tab, synchronous: true, mode: .explicitSave)
         persistSession()
-        flashStatus(tab.isDirty ? "保存失败,请尝试另存为" : "已保存")
+        flashStatus(tab.isDirty ? L("Save failed, try Save As") : L("Saved"))
     }
 
     @objc func saveCurrentAs() {
@@ -577,10 +579,10 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
         }
         if tab.isDirty {
             let alert = NSAlert()
-            alert.messageText = "重新加载文件?"
-            alert.informativeText = "该文件有未落盘的修改,重新加载将丢弃这些修改。"
-            alert.addButton(withTitle: "重新加载")
-            alert.addButton(withTitle: "取消")
+            alert.messageText = L("Reload file?")
+            alert.informativeText = L("This file has unsaved changes; reloading will discard them.")
+            alert.addButton(withTitle: L("Reload"))
+            alert.addButton(withTitle: L("Cancel"))
             alert.alertStyle = .warning
             alert.beginSheetModal(for: win) { response in
                 if response == .alertFirstButtonReturn { performReload() }
@@ -618,15 +620,15 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
         }
         let alert = NSAlert()
         if dirty.count == 1, let tab = dirty.first {
-            alert.messageText = "是否保存对“\(tab.displayName)”的更改?"
+            alert.messageText = LF("Save changes to “%@”?", tab.displayName)
         } else {
-            alert.messageText = "有 \(dirty.count) 个文档未保存"
+            alert.messageText = LF("%d documents unsaved", dirty.count)
         }
-        alert.informativeText = "未保存的修改已自动备份,但只有选择“保存”才会写入原文件。"
+        alert.informativeText = L("Unsaved changes are already backed up; they are written to the original file only if you choose “Save”.")
         alert.alertStyle = .warning
-        alert.addButton(withTitle: "保存并退出")
-        alert.addButton(withTitle: "不保存退出")
-        alert.addButton(withTitle: "取消")
+        alert.addButton(withTitle: L("Save and Quit"))
+        alert.addButton(withTitle: L("Quit without Saving"))
+        alert.addButton(withTitle: L("Cancel"))
 
         switch alert.runModal() {
         case .alertFirstButtonReturn:
@@ -713,11 +715,11 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
 
     private func alertWriteFailed(tab: EditorTab, error: Error) {
         let alert = NSAlert()
-        alert.messageText = "自动保存失败"
-        alert.informativeText = "无法写入 \(tab.displayName):\(error.localizedDescription)\n\n内容已保留在内存中,请用「另存为」选择新的位置。"
+        alert.messageText = L("Auto Save Failed")
+        alert.informativeText = LF("Cannot write %@: %@\n\nContent is kept in memory; use “Save As…” to choose a new location.", tab.displayName, error.localizedDescription)
         alert.alertStyle = .critical
-        alert.addButton(withTitle: "另存为…")
-        alert.addButton(withTitle: "知道了")
+        alert.addButton(withTitle: L("Save As…"))
+        alert.addButton(withTitle: L("Got it"))
         if let win = window {
             alert.beginSheetModal(for: win) { [weak self] response in
                 if response == .alertFirstButtonReturn {
@@ -743,7 +745,7 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
         }
 
         guard let content = snapshotContent else {
-            flashStatus("该历史文档的内容已不存在")
+            flashStatus(L("This history document no longer exists"))
             return
         }
         discardEmptyInitialDraftIfNeeded()
@@ -772,7 +774,7 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
     /// Cmd+Shift+T:重新打开最近关闭的文档
     @objc func reopenLastClosedDoc() {
         guard let first = historyStore.entries.first else {
-            flashStatus("暂无历史文档")
+            flashStatus(L("No history documents"))
             return
         }
         openHistoryEntry(id: first.id)
@@ -780,10 +782,10 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
 
     @objc func clearHistoryDocuments() {
         let alert = NSAlert()
-        alert.messageText = "清空历史文档?"
-        alert.informativeText = "全部 \(historyStore.entries.count) 条历史记录及其内容备份将被删除,无法恢复。"
-        alert.addButton(withTitle: "清空")
-        alert.addButton(withTitle: "取消")
+        alert.messageText = L("Clear history documents?")
+        alert.informativeText = LF("All %d history entries and their content backups will be deleted. This cannot be undone.", historyStore.entries.count)
+        alert.addButton(withTitle: L("Clear"))
+        alert.addButton(withTitle: L("Cancel"))
         alert.alertStyle = .warning
         guard let win = window else {
             historyStore.clear()
@@ -792,7 +794,7 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
         alert.beginSheetModal(for: win) { [weak self] response in
             guard response == .alertFirstButtonReturn, let self = self else { return }
             self.historyStore.clear()
-            self.flashStatus("历史文档已清空")
+            self.flashStatus(L("History documents cleared"))
         }
     }
 
@@ -987,10 +989,10 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
         guard !reloadAlertShown, let win = window else { return }
         reloadAlertShown = true
         let alert = NSAlert()
-        alert.messageText = "文件已在其他程序中修改"
-        alert.informativeText = "\(tab.displayName) 在磁盘上发生了变化,而本页也有修改。\n\n保留哪个版本?(另一个版本的副本已保存在应用快照中)"
-        alert.addButton(withTitle: "保留我的内容")
-        alert.addButton(withTitle: "加载磁盘版本")
+        alert.messageText = L("File changed in another program")
+        alert.informativeText = LF("%@ changed on disk while this tab has edits.\n\nKeep which version? (A copy of the other version is saved in the app snapshot)", tab.displayName)
+        alert.addButton(withTitle: L("Keep My Version"))
+        alert.addButton(withTitle: L("Load Disk Version"))
         alert.alertStyle = .warning
         alert.beginSheetModal(for: win) { [weak self] response in
             self?.reloadAlertShown = false
@@ -1081,12 +1083,12 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
         }
         if findMatches.isEmpty {
             let queryEmpty = findBar.options.query.isEmpty
-            findBar.setMatchCount(queryEmpty ? "" : "无匹配")
+            findBar.setMatchCount(queryEmpty ? "" : L("No matches"))
             findCurrent = -1
         } else {
             findCurrent = findCurrent < 0 ? -1 : min(findCurrent, findMatches.count - 1)
             findBar.setMatchCount(findCurrent < 0
-                ? "\(findMatches.count) 处匹配"
+                ? LF("%d matches", findMatches.count)
                 : "\(findCurrent + 1)/\(findMatches.count)")
         }
         tab.ruler.needsDisplay = true
@@ -1158,7 +1160,7 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
             findBar.setMatchCount("\(findCurrent + 1)/\(findMatches.count)")
         } else {
             findCurrent = -1
-            findBar.setMatchCount(findMatches.isEmpty ? "已替换至末尾" : "")
+            findBar.setMatchCount(findMatches.isEmpty ? L("Replaced to end") : "")
         }
     }
 
@@ -1168,7 +1170,7 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
         let (newText, count) = FindEngine.replaceAll(in: text, options: findBar.options,
                                                     template: findBar.replacementTemplate)
         guard count > 0 else {
-            findBar.setMatchCount("无匹配")
+            findBar.setMatchCount(L("No matches"))
             return
         }
         let tv = tab.textView
@@ -1176,7 +1178,7 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
         tv.shouldChangeText(in: full, replacementString: newText)
         tv.textStorage?.replaceCharacters(in: full, with: newText)
         tv.didChangeText()
-        findBar.setMatchCount("已替换 \(count) 处")
+        findBar.setMatchCount(LF("Replaced %d", count))
         updateFindMatches()
     }
 
@@ -1225,13 +1227,13 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
         guard let tab = activeTab else { return }
         tab.rebuildIndexIfNeeded()
         let alert = NSAlert()
-        alert.messageText = "跳转到行"
-        alert.informativeText = "输入行号(1 - \(tab.lineIndex.lineCount)):"
+        alert.messageText = L("Go to Line")
+        alert.informativeText = LF("Enter line number (1 - %d):", tab.lineIndex.lineCount)
         let field = NSTextField(frame: NSRect(x: 0, y: 0, width: 160, height: 24))
         alert.accessoryView = field
         alert.window.initialFirstResponder = field
-        alert.addButton(withTitle: "跳转")
-        alert.addButton(withTitle: "取消")
+        alert.addButton(withTitle: L("Go"))
+        alert.addButton(withTitle: L("Cancel"))
         guard alert.runModal() == .alertFirstButtonReturn else { return }
         let trimmed = field.stringValue.trimmingCharacters(in: .whitespaces)
         guard let n = Int(trimmed), n >= 1 else { return }
@@ -1326,15 +1328,15 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
         guard encoding != tab.encoding else { return }
         let outText = LineEndingTool.apply(tab.textView.string, tab.eol)
         guard TextCodec.canRepresent(outText, encoding: encoding) else {
-            showAlert("无法转换编码",
-                      "内容包含「\(encoding.displayName)」无法表示的字符。\n请先另存为 UTF-8,或移除这些字符后再试。")
+            showAlert(L("Cannot convert encoding"),
+                      LF("Content contains characters that cannot be represented in %@.\nSave as UTF-8 first, or remove those characters.", encoding.displayName))
             return
         }
         tab.encoding = encoding
         tab.markDirty()
         writeTab(tab, synchronous: true, mode: .explicitSave)
         refreshStatus()
-        flashStatus("编码已转换为 \(encoding.displayName)")
+        flashStatus(LF("Encoding converted to %@", encoding.displayName))
     }
 
     @objc func convertEOLTo(_ sender: NSMenuItem) {
@@ -1346,7 +1348,7 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
         tab.markDirty()
         writeTab(tab, synchronous: true, mode: .explicitSave)
         refreshStatus()
-        flashStatus("换行符已转换为 \(eol.rawValue)")
+        flashStatus(LF("Line endings converted to %@", eol.rawValue))
     }
 
     @objc func setLanguageTo(_ sender: NSMenuItem) {
@@ -1405,7 +1407,7 @@ final class MainWindowController: NSWindowController, NSWindowDelegate, NSMenuIt
 
     @objc func showAbout() {
         let credits = NSMutableAttributedString(string:
-            "macOS 原生文本编辑器\n对标 Notepad++ 的平替之作\n\n自动保存 · 会话恢复 · 多标签 · 语法高亮\n\n")
+            L("Native macOS text editor\nA worthy Notepad++ alternative\n\nAuto save · Session restore · Tabs · Syntax highlighting\n\n"))
         credits.append(NSAttributedString(
             string: "开发者:L.K\nQQ:394808300",
             attributes: [
