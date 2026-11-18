@@ -12,6 +12,10 @@
 
 ## 界面预览
 
+**41 秒动图，快速看懂 NotepadMac**（无声；[高清带声版视频点这里](docs/videos/notepadmac-demo.mp4)）
+
+![NotepadMac 功能演示：多标签、Markdown 高亮、查找替换、自动备份](docs/videos/notepadmac-demo.gif)
+
 **主窗口**:菜单栏完整收录,Markdown 高亮 + 查找高亮 + 多标签,底部状态栏实时显示 行:列 / 选区 / 编码 / 换行符 / 语言
 
 ![主窗口:菜单栏、Markdown 高亮、查找替换、多标签编辑](docs/screenshots/screenshot-main.png)

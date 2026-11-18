@@ -10,7 +10,11 @@
 
 Built with pure Swift + AppKit, zero third-party dependencies, no Electron. Core design philosophy: **open and type, never lose anything** — auto backup + session restore as double insurance. Close the app and reopen it: everything is exactly as you left it.
 
-## Screenshots
+## Demo & Screenshots
+
+**A 41-second GIF tour of NotepadMac** (silent; [full HD video with sound here](docs/videos/notepadmac-demo.mp4))
+
+![NotepadMac demo: multi-tab, Markdown highlighting, find & replace, auto backup](docs/videos/notepadmac-demo.gif)
 
 **Main window**: full menu bar included, Markdown highlighting + find highlighting + multiple tabs, with a status bar showing line:column / selection / encoding / line endings / language in real time
 

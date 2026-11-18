@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>NotepadMac 公众号文章</title>
+</head>
+<body style="margin:0;padding:24px 16px;background:#ffffff;max-width:677px;margin:0 auto;font-family:-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;line-height:1.75;color:#3f3f3f;font-size:15px;">
+
+<!-- 标题建议(发布时填到公众号标题栏,不随正文复制) -->
+<!-- 标题A:macOS 上的 Notepad++ 平替来了:开源免费,点开就写,永不丢失 -->
+<!-- 标题B:我开源了一个 macOS 文本编辑器:随手记是灵魂,写代码只是顺带 -->
+
+<!-- 引言 -->
+<section style="margin:0 0 28px;">
+<p style="margin:0 0 14px;font-size:16px;font-weight:600;color:#1f1f1f;">在 Windows 上,Notepad++ 是无数人的「随手记 + 轻编辑」神器;到了 macOS,它缺席了。</p>
+<p style="margin:0 0 14px;">自带「文本编辑」功能太弱,VS Code 又太重——记个灵感、改个配置、看个日志,都嫌折腾。于是我写了 <strong>NotepadMac</strong>:一个 macOS 原生文本编辑器,<strong>纯 Swift + AppKit,零第三方依赖,安装包仅约 1MB</strong>。</p>
+<p style="margin:0;">它最想做好的一件事,是<strong>随手记</strong>:点开就写,内容永不丢。在这个基础上,Notepad++ 的经典能力也基本一个不少。</p>
+</section>
+
+<!-- 界面预览:主图 -->
+<section style="margin:0 0 28px;">
+<img src="{{IMG_MAIN}}" alt="NotepadMac 主界面" style="width:100%;border-radius:8px;border:1px solid #e5e5e5;display:block;" />
+<p style="margin:8px 0 0;font-size:13px;color:#888888;text-align:center;">主窗口:菜单栏完整收录,Markdown 高亮 + 查找高亮 + 多标签,底部状态栏实时显示 行:列 / 选区 / 编码 / 换行符 / 语言</p>
+</section>
+
+<!-- 核心承诺:永不丢失 -->
+<section style="margin:0 0 28px;">
+<h2 style="margin:0 0 16px;font-size:18px;color:#1f1f1f;border-left:4px solid #07c160;padding-left:10px;">核心承诺:打开即写,永不丢失</h2>
+<p style="margin:0 0 14px;">随手记的内容最怕丢。NotepadMac 用<strong>三重自动备份</strong>兜底:</p>
+<section style="background:#f6fbf6;border-radius:8px;padding:14px 16px;margin:0 0 14px;">
+<p style="margin:0 0 8px;">⏱️ <strong>停手 0.8 秒自动快照</strong> —— 编辑停顿 0.8 秒即写入应用内备份</p>
+<p style="margin:0 0 8px;">🔁 <strong>5 秒周期兜底</strong> —— 不停手也有备份接力;切换标签、失焦时同步落盘</p>
+<p style="margin:0;">💾 <strong>退出前全部落盘</strong> —— 正常退出把所有内容写盘</p>
+</section>
+<p style="margin:0 0 14px;">崩溃、强退、误关都不丢——重启后<strong>恢复所有标签,连未保存的正文也一并回来</strong>(顺序、光标、滚动位置、编码、换行符、语言全部还原)。</p>
+<p style="margin:0;">还有「<strong>历史文档</strong>」双保险:关闭过的文档自动留底(含未保存内容),默认展示最近 10 条、上限 50 条,<strong>Cmd+Shift+T</strong> 一键重开上次关闭的文档。</p>
+</section>
+
+<!-- 保存确认弹窗 -->
+<section style="margin:0 0 28px;">
+<img src="{{IMG_CONFIRM}}" alt="关闭前保存确认" style="width:100%;border-radius:8px;border:1px solid #e5e5e5;display:block;" />
+<p style="margin:8px 0 0;font-size:13px;color:#888888;text-align:center;">关闭标签 / 退出应用,只要有未保存修改必然弹窗:保存 / 不保存 / 取消</p>
+</section>
+
+<!-- 为什么选它 -->
+<section style="margin:0 0 28px;">
+<h2 style="margin:0 0 16px;font-size:18px;color:#1f1f1f;border-left:4px solid #07c160;padding-left:10px;">为什么选它</h2>
+<table style="width:100%;border-collapse:collapse;font-size:14px;">
+<tr>
+<td style="border:1px solid #e5e5e5;padding:10px 12px;background:#f7f7f7;width:42%;"><strong>痛点</strong></td>
+<td style="border:1px solid #e5e5e5;padding:10px 12px;background:#f7f7f7;"><strong>NotepadMac 的答案</strong></td>
+</tr>
+<tr>
+<td style="border:1px solid #e5e5e5;padding:10px 12px;">macOS 自带文本编辑功能太弱</td>
+<td style="border:1px solid #e5e5e5;padding:10px 12px;">多标签、行号、查找替换(正则)、11 种语言语法高亮、编码/换行符处理,一个不少</td>
+</tr>
+<tr>
+<td style="border:1px solid #e5e5e5;padding:10px 12px;">编辑器写一半崩溃/误关就丢</td>
+<td style="border:1px solid #e5e5e5;padding:10px 12px;">三重自动备份(0.8s 去抖 + 5s 兜底 + 退出落盘),未保存内容跨重启恢复,关闭/退出必弹保存确认</td>
+</tr>
+<tr>
+<td style="border:1px solid #e5e5e5;padding:10px 12px;">Notepad++ 在 macOS 没有</td>
+<td style="border:1px solid #e5e5e5;padding:10px 12px;">交互全面对标:Ctrl+Tab 切换、Cmd+1..9 直达、右键关闭、状态栏、行号、GBK 编码识别</td>
+</tr>
+<tr>
+<td style="border:1px solid #e5e5e5;padding:10px 12px;">VS Code 太重、启动慢</td>
+<td style="border:1px solid #e5e5e5;padding:10px 12px;">原生 AppKit,秒开秒写,安装包仅约 1MB</td>
+</tr>
+</table>
+</section>
+
+<!-- 特性:核心能力 -->
+<section style="margin:0 0 28px;">
+<h2 style="margin:0 0 16px;font-size:18px;color:#1f1f1f;border-left:4px solid #07c160;padding-left:10px;">核心能力</h2>
+<section style="background:#f7f7f7;border-radius:8px;padding:14px 16px;">
+<p style="margin:0 0 8px;">💾 <strong>自动备份</strong>:编辑 0.8 秒后自动写入应用内快照,另有 5 秒周期兜底;崩溃也不丢内容</p>
+<p style="margin:0 0 8px;">📝 <strong>显式保存</strong>:Cmd+S 写回原文件;未命名草稿弹出存放位置选择;标签 ● 标记 = 有未保存修改</p>
+<p style="margin:0 0 8px;">⚠️ <strong>保存确认</strong>:关闭标签 / 退出应用,只要有未保存修改必然弹窗:保存 / 不保存 / 取消</p>
+<p style="margin:0 0 8px;">♻️ <strong>会话恢复</strong>:标签顺序、激活位置、光标、滚动、编码、换行符、语言全部还原,未保存正文一并恢复</p>
+<p style="margin:0 0 8px;">🕘 <strong>历史文档</strong>:误关自动留底(含未保存内容),Cmd+Shift+T 一键重开</p>
+<p style="margin:0 0 8px;">🗒️ <strong>草稿本模式</strong>:Cmd+N 新建草稿直接写,无需保存对话框</p>
+<p style="margin:0;">📂 <strong>打开任意文本文件</strong>:Cmd+O、拖拽到窗口、Finder「打开方式」、双击文件关联(50 余种扩展名)</p>
+</section>
+</section>
+
+<!-- 查找替换 + 编码菜单 -->
+<section style="margin:0 0 28px;">
+<h2 style="margin:0 0 16px;font-size:18px;color:#1f1f1f;border-left:4px solid #07c160;padding-left:10px;">Notepad++ 对标功能</h2>
+<img src="{{IMG_REPLACE}}" alt="正则查找替换" style="width:100%;border-radius:8px;border:1px solid #e5e5e5;display:block;" />
+<p style="margin:8px 0 14px;font-size:13px;color:#888888;text-align:center;">查找替换:全部匹配高亮、正则支持 $n 反向引用</p>
+<section style="background:#f7f7f7;border-radius:8px;padding:14px 16px;">
+<p style="margin:0 0 8px;">🗂️ 多标签:折行展示、拖拽排序、Ctrl+Tab 循环切换、Cmd+1..9 直达、中键关闭、右键菜单(关闭其他/全部)</p>
+<p style="margin:0 0 8px;">📏 行号栏:正确处理软换行,当前行高亮</p>
+<p style="margin:0 0 8px;">📊 状态栏:行:列、选区字符数、总字符数、行数、编码、换行符类型、当前语言</p>
+<p style="margin:0 0 8px;">🔍 查找/替换:全部匹配高亮、忽略大小写、正则($n 反向引用)、替换/全部替换</p>
+<p style="margin:0 0 8px;">↩️ 编码:自动检测 UTF-8 / UTF-8 BOM / UTF-16 LE·BE / GB18030 / Latin-1,菜单转换保存</p>
+<p style="margin:0 0 8px;">⏎ 换行符:检测并保持 LF / CRLF / CR,菜单一键转换(跨平台文本不乱行)</p>
+<p style="margin:0 0 8px;">🎨 语法高亮:Markdown / JSON / Python / JavaScript·TS / Swift / C·C++ / HTML / XML / Shell / YAML / Java,按扩展名自动识别;超大文件自动降级</p>
+<p style="margin:0 0 8px;">⏱️ 插入时间戳(Cmd+;)、大小写转换、字体缩放(Cmd +/-/0)、字体面板(Cmd+T)</p>
+<p style="margin:0;">🌙 自动换行开关、窗口置顶、深色模式跟随系统</p>
+</section>
+</section>
+
+<!-- 编码菜单截图 -->
+<section style="margin:0 0 28px;">
+<img src="{{IMG_ENCODING}}" alt="编码转换菜单" style="width:100%;border-radius:8px;border:1px solid #e5e5e5;display:block;" />
+<p style="margin:8px 0 0;font-size:13px;color:#888888;text-align:center;">编码菜单:GB18030 / UTF-16 / Latin-1 一键互转</p>
+</section>
+
+<!-- 深浅色对比 -->
+<section style="margin:0 0 28px;">
+<h2 style="margin:0 0 16px;font-size:18px;color:#1f1f1f;border-left:4px solid #07c160;padding-left:10px;">代码模式 · 深浅色跟随系统</h2>
+<table style="width:100%;border-collapse:collapse;border:0;">
+<tr>
+<td style="width:50%;padding-right:6px;vertical-align:top;"><img src="{{IMG_CODE}}" alt="浅色代码模式" style="width:100%;border-radius:8px;border:1px solid #e5e5e5;display:block;" /></td>
+<td style="width:50%;padding-left:6px;vertical-align:top;"><img src="{{IMG_DARK}}" alt="深色模式" style="width:100%;border-radius:8px;border:1px solid #555555;display:block;" /></td>
+</tr>
+<tr>
+<td style="padding-top:6px;font-size:13px;color:#888888;text-align:center;">浅色 · Swift 高亮 + 行号</td>
+<td style="padding-top:6px;font-size:13px;color:#888888;text-align:center;">深色 · 跟随系统外观</td>
+</tr>
+</table>
+</section>
+
+<!-- 状态栏特写 -->
+<section style="margin:0 0 28px;">
+<img src="{{IMG_STATUSBAR}}" alt="状态栏特写" style="width:100%;border-radius:8px;border:1px solid #e5e5e5;display:block;" />
+<p style="margin:8px 0 0;font-size:13px;color:#888888;text-align:center;">状态栏:行:列 · 已选字符数 · 总字符 · 行数 · 编码 · 换行符 · 语言</p>
+</section>
+
+<!-- 快捷键 -->
+<section style="margin:0 0 28px;">
+<h2 style="margin:0 0 16px;font-size:18px;color:#1f1f1f;border-left:4px solid #07c160;padding-left:10px;">快捷键</h2>
+<section style="background:#f7f7f7;border-radius:8px;padding:14px 16px;">
+<p style="margin:0 0 8px;">⌘N 新建标签 &nbsp;·&nbsp; ⌘O 打开文件 &nbsp;·&nbsp; ⌘S 立即保存(自动保存常开) &nbsp;·&nbsp; ⇧⌘S 另存为</p>
+<p style="margin:0 0 8px;">⌘W 关闭标签 &nbsp;·&nbsp; ⌘F / ⌥⌘F 查找 / 替换 &nbsp;·&nbsp; ⌘G / ⇧⌘G 查找下一个 / 上一个</p>
+<p style="margin:0 0 8px;">⌘L 跳转到行 &nbsp;·&nbsp; ⌘; 插入时间戳 &nbsp;·&nbsp; ⌘T 字体面板 &nbsp;·&nbsp; ⇧⌘T 重开上次关闭的文档</p>
+<p style="margin:0;">⌃Tab / ⌃⇧Tab 下一个 / 上一个标签 &nbsp;·&nbsp; ⌘1..9 直达标签 &nbsp;·&nbsp; ⌘= / ⌘- / ⌘0 放大 / 缩小 / 实际大小</p>
+</section>
+</section>
+
+<!-- 安装 -->
+<section style="margin:0 0 28px;">
+<h2 style="margin:0 0 16px;font-size:18px;color:#1f1f1f;border-left:4px solid #07c160;padding-left:10px;">怎么装?</h2>
+<p style="margin:0 0 12px;">开源免费。无需完整版 Xcode,装好 Command Line Tools 即可(<code style="background:#f0f0f0;padding:2px 6px;border-radius:4px;font-family:Menlo,monospace;">xcode-select --install</code>):</p>
+<section style="background:#1e1e1e;border-radius:8px;padding:14px 16px;overflow-x:auto;">
+<p style="margin:0;font-family:Menlo,Consolas,monospace;font-size:13px;color:#d4d4d4;white-space:pre;">git clone https://gitee.com/kevin-anycode/notepadmac.git
+cd notepadmac
+bash build.sh               # 构建到 build/NotepadMac.app
+open build/NotepadMac.app   # 直接运行
+bash build.sh --install     # 或安装到 /Applications</p>
+</section>
+<p style="margin:12px 0 0;">开源地址:<strong>文末「阅读原文」</strong>跳转 Gitee 仓库(GitHub 同步:kevin-anycode/notepadmac)。</p>
+</section>
+
+<!-- 数据目录 -->
+<section style="margin:0 0 28px;">
+<h2 style="margin:0 0 16px;font-size:18px;color:#1f1f1f;border-left:4px solid #07c160;padding-left:10px;">数据在哪?</h2>
+<p style="margin:0 0 12px;">所有数据都在 <code style="background:#f0f0f0;padding:2px 6px;border-radius:4px;font-family:Menlo,monospace;">~/Library/Application Support/NotepadMac/</code>:session.json 记会话状态,drafts/ 存草稿与崩溃恢复快照。删除该目录即可完全重置应用(帮助菜单里有「打开数据目录」)。</p>
+<p style="margin:0;">中英双语界面跟随系统语言;目前已知边界:超大文件(>1MB)自动关闭语法高亮、暂无列编辑/书签/宏/插件系统(v2 候选)。</p>
+</section>
+
+<!-- 结尾 -->
+<section style="margin:0 0 10px;">
+<section style="background:#f6fbf6;border-radius:8px;padding:16px 18px;">
+<p style="margin:0 0 8px;font-weight:600;color:#1f1f1f;">最后</p>
+<p style="margin:0;">随手记是最高频、也最不被认真对待的需求;轻量编辑是每个 Mac 用户的日常。NotepadMac 想做的就一件事:<strong>打开即写,永不丢失</strong>。开源项目,欢迎提 Issue、提 PR;觉得好用,点个 Star 就是最好的鼓励。</p>
+</section>
+<p style="margin:16px 0 0;font-size:13px;color:#888888;text-align:center;">— 完 —</p>
+</section>
+
+</body>
+</html>
